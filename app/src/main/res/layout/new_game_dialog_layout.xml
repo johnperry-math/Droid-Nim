@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:weightSum="6">
+
+    <!--TextView
+        android:layout_width="match_parent"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="@string/new_game_dialog_title"
+        android:layout_height="wrap_content"
+        android:textSize="24sp"
+        android:layout_weight="2"/>-->
+
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/number_of_rows_label"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:gravity="center"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_weight="1"
+        android:weightSum="10">
+
+        <SeekBar
+            android:id="@+id/sb_number_of_rows"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:max="7"
+            android:layout_weight="7"/>
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+
+        <TextView
+            android:id="@+id/tv_number_of_rows"
+            android:maxEms="2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="0"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/maximum_droids_per_row_label"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:gravity="center"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_weight="1"
+        android:weightSum="10">
+
+        <SeekBar
+            android:id="@+id/sb_max_droids"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:max="5"
+            android:layout_weight="7"/>
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+
+        <TextView
+            android:id="@+id/tv_max_droids"
+            android:maxEms="2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="0"/>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/new_dialog_go_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_weight="1"
+        android:text="@string/go"/>
+
+</LinearLayout>

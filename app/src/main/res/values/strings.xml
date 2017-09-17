@@ -1,0 +1,10 @@
+<resources>
+
+    <string name="app_name">Droid Nim</string>
+
+    <string name="new_game_dialog_title">New Game</string>
+    <string name="number_of_rows_label">Number of rows</string>
+    <string name="maximum_droids_per_row_label">Maximum droids per row</string>
+    <string name="go">Go!</string>
+
+</resources>
