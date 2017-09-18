@@ -1,6 +1,7 @@
 package name.cantanima.droidnim
 
 import android.content.Context
+import android.content.DialogInterface
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.drawable.Drawable
@@ -10,6 +11,7 @@ import android.graphics.Color.GREEN
 import android.graphics.Color.RED
 import android.graphics.PorterDuff.Mode.SRC_ATOP
 import android.support.v4.content.res.ResourcesCompat
+import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.view.MotionEvent
 import android.view.MotionEvent.*
@@ -21,9 +23,10 @@ import java.util.*
 /**
  * Shows a Nim game using Droids.
  */
-class Nim_Game_View : View, OnTouchListener {
-
+class Nim_Game_View : View, OnTouchListener, DialogInterface.OnClickListener {
     private var game = Nim_Game(intArrayOf(7, 5, 3))
+    private var orig_num_droids = intArrayOf(0, 0, 0)
+
     private var pebble_paint = Paint()
     private var highlight_paint = Paint()
     private var max_pebbles = 7
@@ -38,6 +41,8 @@ class Nim_Game_View : View, OnTouchListener {
 
     private val random = Random()
     private var opponent : Opponent? = null
+
+    private var game_over_dialog : AlertDialog? = null
 
     private val tag = "Nim Game View"
 
@@ -75,15 +80,38 @@ class Nim_Game_View : View, OnTouchListener {
     private fun new_game_dialog() =
         New_Game_Dialog(context, this, game.rows.size, max_pebbles).show()
 
+    private fun declare_winner(human_won: Boolean) {
+        val message : String
+        if (human_won) {
+            val all_insults = context.resources.getStringArray(R.array.win_insults)
+            message = context.getString(R.string.you_won) + " " +
+                    all_insults[random.nextInt(all_insults.size)]
+        } else {
+            val all_insults = context.resources.getStringArray(R.array.lose_insults)
+            message = context.getString(R.string.i_won) + " " +
+                    all_insults[random.nextInt(all_insults.size)]
+        }
+        game_over_dialog = AlertDialog.Builder(context)
+                .setTitle(context.getString(R.string.game_over))
+                .setMessage(message)
+                .setPositiveButton(context.getString(R.string.again_cur), this)
+                .show()
+    }
+
     fun start_game(rows : Int, max_pebbles_per_row : Int) {
         val game_data = IntArray(rows)
+        orig_num_droids = IntArray(rows)
         var max_made = 0
         for (i in 0.until(rows)) {
-            game_data[i] = random.nextInt(max_pebbles_per_row) + 1
+            orig_num_droids[i] = random.nextInt(max_pebbles_per_row) + 1
+            game_data[i] = orig_num_droids[i]
             max_made = maxOf(max_made, game_data[i])
         }
-        if (max_made < max_pebbles_per_row)
-            game_data[random.nextInt(rows)] = max_pebbles_per_row
+        if (max_made < max_pebbles_per_row) {
+            val which_row = random.nextInt(rows)
+            orig_num_droids[which_row] = max_pebbles_per_row
+            game_data[which_row] = max_pebbles_per_row
+        }
         game = Nim_Game(game_data)
         max_pebbles = game.max_size()
         opponent!!.prepare_for_new_game(game)
@@ -112,6 +140,17 @@ class Nim_Game_View : View, OnTouchListener {
                     (paddingLeft + diameter).toInt(), (start_y + diameter * i * 2 + diameter / 2).toInt()
             )
             droid.draw(canvas)
+            for (j in 1.rangeTo(orig_num_droids[i] - row.pebbles)) {
+                val start_x = (diameter * j + diameter + paddingLeft).toInt()
+                droid.setColorFilter(RED, SRC_ATOP)
+                droid.setBounds(
+                        start_x,
+                        (start_y + diameter * i * 2 - diameter / 2).toInt(),
+                        (start_x + diameter).toInt(),
+                        (start_y + diameter * i * 2 + diameter / 2).toInt()
+                )
+                droid.draw(canvas)
+            }
             for (j in 1.rangeTo(row.pebbles)) {
                 //var which_paint = pebble_paint
                 var which_color = GREEN
@@ -121,7 +160,7 @@ class Nim_Game_View : View, OnTouchListener {
                     which_color = RED
                     offset = random.nextInt(4) - 2
                 }
-                val start_x = (diameter * j + diameter + paddingLeft).toInt()
+                val start_x = (diameter * j + diameter + diameter * (orig_num_droids[i] - row.pebbles) + paddingLeft).toInt()
                 droid.setBounds(
                         start_x + offset,
                         (start_y + diameter * i * 2 - diameter / 2).toInt(),
@@ -166,22 +205,26 @@ class Nim_Game_View : View, OnTouchListener {
             val diameter = minOf(pebble_width, row_height)
             val start_x = paddingLeft + 2 * diameter
             val start_y = view_height / 2 - game.rows.size * diameter
-            val end_x = view_width - paddingRight
+            val end_x = start_x + diameter * max_pebbles // view_width - paddingRight
             val end_y = start_y + diameter * 2 * game.rows.size - 1
             if (x >= start_x && x <= end_x && y >= start_y && y <= end_y) {
                 target_row = (y - start_y).toInt() / (2 * diameter).toInt()
-                target_pebble = (x - start_x).toInt() / diameter.toInt() + 1
+                target_pebble = (x - start_x).toInt() / diameter.toInt() + 1 - (orig_num_droids[target_row] - game.rows[target_row].pebbles)
+                if (target_pebble < 0) target_pebble = 0
                 val action = p1.actionMasked
                 if (action == ACTION_DOWN || action == ACTION_MOVE) {
                     highlight = true
                 } else if (action == ACTION_UP && highlight) {
                     var finished = game.play(Move(target_row, target_pebble))
                     highlight = false
+                    var human_last = true
                     val my_opponent : Opponent? = opponent
-                    if (!finished && my_opponent != null)
+                    if (!finished && my_opponent != null) {
+                        human_last = false
                         finished = my_opponent.make_a_move()
+                    }
                     if (finished)
-                        new_game_dialog()
+                        declare_winner(human_last)
                 }
                 invalidate()
             } else {
@@ -191,6 +234,10 @@ class Nim_Game_View : View, OnTouchListener {
         }
 
         return result
+    }
+
+    override fun onClick(p0: DialogInterface?, p1: Int) {
+        new_game_dialog()
     }
 
 }

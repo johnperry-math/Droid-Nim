@@ -7,4 +7,38 @@
     <string name="maximum_droids_per_row_label">Maximum droids per row</string>
     <string name="go">Go!</string>
 
+    <string name="game_over">Game over!</string>
+    <string name="i_won">I won!</string>
+    <string name="you_won">You won!</string>
+
+    <string name="again_cur">Again, cur!</string>
+
+    <string-array name="lose_insults">
+        <item>Even though I was playing with &#8220;One arm behind my back&#8221;! I&#8217;m telling all my Droid friends about this!</item>
+        <item>Yes! Yes! I won! Who&#8217;s The Droid? I&#8217;m The Droid! Yes!</item>
+        <item>But of course: my brain is much smaller than yours. Who says bigger is always better? Not a Droid!</item>
+        <item>As Descartes wrote, &#8220;I think, therefore I am.&#8221; I think several billion times a second. Whereas you&#8230; Uhm, are you sure you exist?</item>
+        <item>Maybe you should lay off the video games and hit the books. I recommend &#8220;Winning Ways for Your Mathematical Plays&#8221;.</item>
+    </string-array>
+    <string name="player_won">You won!&#160;</string>
+    <string-array name="win_insults">
+        <item>I wouldn&#8217;t brag too loud, were I you. I mean, come on, I was playing with &#8220;One arm behind my back&#8221;.</item>
+        <item>You rotten, dirty, no-account, lowlife, cheating scoundrel! I don&#8217;t know what you did, but it ain&#8217;t fair!</item>
+        <item>Yeah, well, even a blind squirrel finds an acorn sometimes.</item>
+        <item>Obviously you disassembled my bytecode and analyzed it to find the winning strategy. Not very sporting!</item>
+        <item>I&#8217;m so embarrassed. How can I face my friends after losing to a human?</item>
+        <item>You obviously spent too much time with &#8220;Winning Ways for Your Mathematical Plays.&#8221; You won the game, but lost your social life, didn&#8217;t you?</item>
+    </string-array>
+    <string name="two_player_won">
+        You won! We make a great team, don&#8217;t we? Let&#8217;s take on that Droid again, show &#8217;em who&#8217;s boss!
+    </string>
+    <string name="two_player_lost">
+        Your opponent won! Now you&#8217;ve lost face. Maybe practice more?
+        I&#8217;ll put you in your place.
+    </string>
+    <string name="two_player_won_lost">
+        (The two devices are no longer connected.
+        To play again, press the two-player icon.)
+    </string>
+
 </resources>
