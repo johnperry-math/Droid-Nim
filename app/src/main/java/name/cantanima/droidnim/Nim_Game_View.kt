@@ -25,7 +25,7 @@ import java.util.*
  */
 class Nim_Game_View : View, OnTouchListener, DialogInterface.OnClickListener {
     private var game = Nim_Game(intArrayOf(7, 5, 3))
-    private var orig_num_droids = intArrayOf(0, 0, 0)
+    private var orig_num_droids = intArrayOf(7, 5, 3)
 
     private var pebble_paint = Paint()
     private var highlight_paint = Paint()
@@ -99,6 +99,7 @@ class Nim_Game_View : View, OnTouchListener, DialogInterface.OnClickListener {
     }
 
     fun start_game(rows : Int, max_pebbles_per_row : Int) {
+        max_pebbles = max_pebbles_per_row
         val game_data = IntArray(rows)
         orig_num_droids = IntArray(rows)
         var max_made = 0
@@ -113,7 +114,6 @@ class Nim_Game_View : View, OnTouchListener, DialogInterface.OnClickListener {
             game_data[which_row] = max_pebbles_per_row
         }
         game = Nim_Game(game_data)
-        max_pebbles = game.max_size()
         opponent!!.prepare_for_new_game(game)
         invalidate()
     }
@@ -124,34 +124,35 @@ class Nim_Game_View : View, OnTouchListener, DialogInterface.OnClickListener {
         val contentWidth = width - paddingLeft - paddingRight
         val contentHeight = height - paddingTop - paddingBottom
 
-        val droid = ResourcesCompat.getDrawable(resources, R.drawable.ic_android_black_24dp, null)
+        val droid = ResourcesCompat.getDrawable(resources, R.drawable.ic_android_first_try, null)
 
-        val pebble_width = contentWidth / (max_pebbles.toFloat() + 2)
-        val row_height = contentHeight / (2 * game.rows.size.toFloat() - 1)
-        val diameter = minOf(pebble_width, row_height)
-        val start_y = view_height / 2 - game.rows.size * diameter + diameter
+        var pebble_width = contentWidth / (max_pebbles.toFloat() + 1.5f)
+        var row_height = contentHeight / (game.rows.size.toFloat())
+        if (pebble_width > row_height) pebble_width = row_height
+        else row_height = pebble_width
+        val start_y = view_height / 2 - row_height * game.rows.size / 2
         for ((i, row) in game.rows.withIndex()) {
             if (highlight && (i == target_row))
                 droid!!.setColorFilter(RED, SRC_ATOP)
             else
                 droid!!.setColorFilter(GREEN, SRC_ATOP)
             droid.setBounds(
-                    paddingLeft, (start_y + diameter * i * 2 - diameter / 2).toInt(),
-                    (paddingLeft + diameter).toInt(), (start_y + diameter * i * 2 + diameter / 2).toInt()
+                    paddingLeft, (start_y + row_height * i).toInt(),
+                    paddingLeft + pebble_width.toInt(), (start_y + row_height * (i + 1)).toInt()
             )
             droid.draw(canvas)
-            for (j in 1.rangeTo(orig_num_droids[i] - row.pebbles)) {
-                val start_x = (diameter * j + diameter + paddingLeft).toInt()
+            for (j in 1..(orig_num_droids[i] - row.pebbles)) {
+                val start_x = (pebble_width * (j + 0.5f) + paddingLeft).toInt()
                 droid.setColorFilter(RED, SRC_ATOP)
                 droid.setBounds(
                         start_x,
-                        (start_y + diameter * i * 2 - diameter / 2).toInt(),
-                        (start_x + diameter).toInt(),
-                        (start_y + diameter * i * 2 + diameter / 2).toInt()
+                        (start_y + row_height * i).toInt(),
+                        (start_x + pebble_width).toInt(),
+                        (start_y + row_height * (i + 1)).toInt()
                 )
                 droid.draw(canvas)
             }
-            for (j in 1.rangeTo(row.pebbles)) {
+            for (j in 1..row.pebbles) {
                 //var which_paint = pebble_paint
                 var which_color = GREEN
                 var offset = 0
@@ -160,12 +161,12 @@ class Nim_Game_View : View, OnTouchListener, DialogInterface.OnClickListener {
                     which_color = RED
                     offset = random.nextInt(4) - 2
                 }
-                val start_x = (diameter * j + diameter + diameter * (orig_num_droids[i] - row.pebbles) + paddingLeft).toInt()
+                val start_x = (paddingLeft + pebble_width * (j + 0.5) + pebble_width * (orig_num_droids[i] - row.pebbles)).toInt()
                 droid.setBounds(
                         start_x + offset,
-                        (start_y + diameter * i * 2 - diameter / 2).toInt(),
-                        (start_x + diameter).toInt(),
-                        (start_y + diameter * i * 2 + diameter / 2).toInt()
+                        (start_y + row_height * i).toInt(),
+                        (start_x + pebble_width).toInt(),
+                        (start_y + row_height * (i + 1)).toInt()
                 )
                 droid.setColorFilter(which_color, SRC_ATOP)
                 droid.draw(canvas)
@@ -173,18 +174,18 @@ class Nim_Game_View : View, OnTouchListener, DialogInterface.OnClickListener {
 
         }
 
-        value_view!!.text = game.value().toString()
+        if (!isInEditMode) value_view!!.text = game.value().toString()
 
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        view_width = measuredWidth - paddingLeft - paddingRight
+        view_width = measuredWidth
         view_height = measuredHeight - paddingTop - paddingBottom
         view_width = minOf(view_width, view_height)
         view_height = view_width
         setMeasuredDimension(
-                view_width + paddingLeft + paddingRight,
+                view_width,
                 view_height + paddingTop + paddingBottom
         )
     }
@@ -200,16 +201,18 @@ class Nim_Game_View : View, OnTouchListener, DialogInterface.OnClickListener {
             val y = p1.y
             val contentWidth = width - paddingLeft - paddingRight
             val contentHeight = height - paddingTop - paddingBottom
-            val pebble_width = contentWidth / (max_pebbles.toFloat() + 2)
-            val row_height = contentHeight / (2 * game.rows.size.toFloat() - 1)
-            val diameter = minOf(pebble_width, row_height)
-            val start_x = paddingLeft + 2 * diameter
-            val start_y = view_height / 2 - game.rows.size * diameter
-            val end_x = start_x + diameter * max_pebbles // view_width - paddingRight
-            val end_y = start_y + diameter * 2 * game.rows.size - 1
-            if (x >= start_x && x <= end_x && y >= start_y && y <= end_y) {
-                target_row = (y - start_y).toInt() / (2 * diameter).toInt()
-                target_pebble = (x - start_x).toInt() / diameter.toInt() + 1 - (orig_num_droids[target_row] - game.rows[target_row].pebbles)
+            var pebble_width = contentWidth / (max_pebbles.toFloat() + 1.5f)
+            var row_height = contentHeight / (game.rows.size.toFloat())
+            if (pebble_width > row_height) pebble_width = row_height
+            else row_height = pebble_width
+            val start_x = 1.5f * pebble_width + paddingLeft
+            val start_y = view_height / 2 - row_height * game.rows.size / 2
+            val end_x = start_x + pebble_width * max_pebbles // view_width - paddingRight
+            val end_y = start_y + row_height * game.rows.size
+            if (x in start_x..end_x && y in start_y..end_y) {
+                target_row = (y - start_y).toInt() / (row_height).toInt()
+                target_row = minOf(target_row, game.rows.size - 1)
+                target_pebble = (x - start_x).toInt() / pebble_width.toInt() + 1 - (orig_num_droids[target_row] - game.rows[target_row].pebbles)
                 if (target_pebble < 0) target_pebble = 0
                 val action = p1.actionMasked
                 if (action == ACTION_DOWN || action == ACTION_MOVE) {
