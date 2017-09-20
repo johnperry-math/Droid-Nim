@@ -13,6 +13,8 @@ val tag = "Opponents"
 
 abstract class Opponent {
 
+    var last_move = Move(-1,-1)
+
     fun prepare_for_new_game(new_game : Nim_Game) {
         game = new_game
     }
@@ -25,7 +27,7 @@ abstract class Opponent {
 
 class Computer_Opponent : Opponent() {
 
-    val random = Random()
+    private val random = Random()
 
     override fun make_a_move() : Boolean {
 
@@ -40,9 +42,11 @@ class Computer_Opponent : Opponent() {
                     for (k in 0.until(this_game.rows.size))
                         if (k != j)
                             xor_sum = xor_sum.xor(this_game.rows[k].pebbles)*/
-                    val xor_sum = this_game.rows.fold(0, {a, b -> a xor b.pebbles}) xor this_game.rows[j].pebbles
+                    val xor_sum = this_game.rows.fold(0, {a, b -> a xor b.pebbles}) xor
+                            this_game.rows[j].pebbles
                     if (xor_sum <= this_game.rows[j].pebbles) {
-                        result = this_game.play(Move(j, this_game.rows[j].pebbles - xor_sum))
+                        last_move = Move(j, this_game.rows[j].pebbles - xor_sum)
+                        result = this_game.play(last_move)
                         break
                     }
                 }
@@ -51,8 +55,8 @@ class Computer_Opponent : Opponent() {
                 do {
                     which_row = random.nextInt(this_game.rows.size)
                 } while (this_game.rows[which_row].pebbles == 0)
-                Log.d(tag, which_row.toString())
-                result = this_game.play(Move(which_row, random.nextInt(this_game.rows[which_row].pebbles) + 1))
+                last_move = Move(which_row, random.nextInt(this_game.rows[which_row].pebbles) + 1)
+                result = this_game.play(last_move)
             }
         }
 
