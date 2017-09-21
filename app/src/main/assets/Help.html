@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ideal Nim</title>
+    <style>
+        body {
+            background: rgb(224, 224, 240) none repeat scroll 0% 50%;
+        }
+    </style>
+</head>
+<body>
+<h1><a name="top">Droid Nim</a></h1>
+<center>
+    Dedicated to the memory of Leo Christopherson, author of Android Nim (1978).
+</center>
+<ul>
+    <li><a href="#idea">The idea</a></li>
+    <li><a href="#gameplay">Gameplay</a></li>
+    <li><a href="#options">Options</a></li>
+    <li><a href="#mathematics">Mathematical ideas behind the game</a></li>
+    <li><a href="#credits">Credits</a></li>
+</ul>
+
+<h2><a name="idea">The idea</a> </h2>
+
+Droid Nim is a game that challenges the mind while illustrating some advanced mathematical ideas.
+It can be difficult to defeat the computer if you don&rsquo;t know what you&rsquo;re doing,
+and even if you do, one slip-up can cost you the game.
+
+<a href="#top">Back to the top</a>
+
+<h2><a name="gameplay">Gameplay</a></h2>
+
+To play, choose any row, and any standing droid in that row.
+If you hold your finger on that droids,
+all the standing droids left of that droid will change color.
+If you lift your finger from that droid,
+the leftmost droids will deactivate the other highlighted droids, which will collapse.
+
+<p></p>
+
+At this point, your opponent will do the same thing.
+
+There are two ways of playing the game.
+<ul>
+    <li>In <b>normal play</b>, the last player to deactivate a droid wins.</li>
+    <li>In <b>mis&egrave;re play</b>, the last player to deactivate a droid loses.</li>
+</ul>
+
+Normal play is the default, but you can change to mis&egrave;re play using the Settings.
+
+<a href="#top">Back to the top</a>
+
+<h2><a name="options">Options</a></h2>
+
+
+
+<a href="#top">Back to the top</a>
+
+<h2><a name="mathematics">Mathematical ideas behind the game</a></h2>
+
+Droid Nim incorporates ideas from <b>number theory</b> and <b>combinatorial game theory</b>.
+You can determine a &ldquo;value&rdquo; of a game by writing each row as a sum of powers of two,
+and canceling any matching powers. For a winning strategy:
+<ul>
+    <li>In normal play you want the game&rsquo;s value to be 0 at the end of your turn.</li>
+    <li>
+        In mis&egrave;re you want to play the same way,
+        <i>except</i> that you want to leave an odd number of rows with one element.
+    </li>
+</ul>
+You can read more about <a href="https://en.wikipedia.org/wiki/Nim">Nim</a> if you like.
+
+<a href="#top">Back to the top</a>
+
+<h2><a name="credits">Credits</a></h2>
+<center>
+    Droid Nim, Version 1.0 &#169; 2017
+    <br/>App by <a href="http://www.math.usm.edu/perry/">John Perry</a>.
+    <p></p>
+    Please report any bugs to the author.
+    <p></p>
+    The source code is available at
+    <a href="https://github.com/johnperry-math/IdealNim">GitHub</a>
+    under the GPL license.
+    <p></p>
+    <p></p>
+    <a href="#top">Back to the top</a>
+    <p></p>
+    <img src="matematikon.png" width="25%">
+</center>
+</body>
+</html>

@@ -63,7 +63,7 @@ class Nim_Row(var pebbles: Int) {
  * @see play
  * @param row_pebbles an array consisting of the number of pebbles in each row
  */
-class Nim_Game(row_pebbles: IntArray) {
+class Nim_Game(row_pebbles: IntArray, val misere : Boolean = false) {
 
     var rows: Array<Nim_Row>
 

@@ -10,7 +10,6 @@ import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.View
 import android.graphics.PorterDuff.Mode.SRC_ATOP
-import android.graphics.Rect
 import android.support.annotation.ColorInt
 import android.support.v4.content.res.ResourcesCompat
 import android.support.v7.app.AlertDialog
@@ -38,12 +37,6 @@ class Nim_Game_View : View, OnTouchListener, DialogInterface.OnClickListener {
     )
     private val eyes_standing = ResourcesCompat.getDrawable(
             resources, R.drawable.ic_android_eyes_standing, null
-    )
-    private val droid_fallen = ResourcesCompat.getDrawable(
-            resources, R.drawable.ic_android_fallen, null
-    )
-    private val eyes_fallen = ResourcesCompat.getDrawable(
-            resources, R.drawable.ic_android_eyes_fallen, null
     )
     private var droids_to_draw : Array<Array<Drawable>> = Array(
             3, { Array(7 - 2*it, { droid_standing!!.constantState.newDrawable() }) }
@@ -102,12 +95,12 @@ class Nim_Game_View : View, OnTouchListener, DialogInterface.OnClickListener {
     private fun new_game_dialog() =
         New_Game_Dialog(context, this, game.rows.size, max_pebbles).show()
 
-    private fun declare_winner(human_won: Boolean) {
+    private fun declare_winner(human_last: Boolean) {
         val all_insults =
-                if (human_won) context.resources.getStringArray(R.array.win_insults)
+                if (human_last xor game.misere) context.resources.getStringArray(R.array.win_insults)
                 else context.resources.getStringArray(R.array.lose_insults)
         val message =
-                if (human_won) context.getString(R.string.you_won) + " " +
+                if (human_last xor game.misere) context.getString(R.string.you_won) + " " +
                         all_insults[random.nextInt(all_insults.size)]
                 else context.getString(R.string.i_won) + " " +
                         all_insults[random.nextInt(all_insults.size)]
@@ -313,213 +306,4 @@ class Nim_Game_View : View, OnTouchListener, DialogInterface.OnClickListener {
         new_game_dialog()
     }
 
-}
-
-class Falling_Droids_Animation(
-        private val view: Nim_Game_View,
-        private val droids: Array<Array<Drawable>>, private val eyes: Array<Array<Drawable>>,
-        private val row: Int, private val which_ones: IntRange,
-        private var delay: Long = 0
-) : Runnable {
-
-    private var step : Int = 0
-    private val falling_droid : Array<Drawable?> = Array(11, { null })
-    private val falling_eyes : Array<Drawable?> = Array(11, { null })
-
-    init {
-        falling_droid[0] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_falling1, null
-        )
-        falling_droid[1] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_falling2, null
-        )
-        falling_droid[2] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_falling3, null
-        )
-        falling_droid[3] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_falling4, null
-        )
-        falling_droid[4] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_falling5, null
-        )
-        falling_droid[5] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_falling6, null
-        )
-        falling_droid[6] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_falling7, null
-        )
-        falling_droid[7] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_falling8, null
-        )
-        falling_droid[8] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_falling9, null
-        )
-        falling_droid[9] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_falling10, null
-        )
-        falling_droid[10] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_fallen, null
-        )
-        falling_eyes[0] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_eyes_falling1, null
-        )
-        falling_eyes[1] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_eyes_falling2, null
-        )
-        falling_eyes[2] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_eyes_falling3, null
-        )
-        falling_eyes[3] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_eyes_falling4, null
-        )
-        falling_eyes[4] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_eyes_falling5, null
-        )
-        falling_eyes[5] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_eyes_falling6, null
-        )
-        falling_eyes[6] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_eyes_falling7, null
-        )
-        falling_eyes[7] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_eyes_falling8, null
-        )
-        falling_eyes[8] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_eyes_falling9, null
-        )
-        falling_eyes[9] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_eyes_falling10, null
-        )
-        falling_eyes[10] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_eyes_fallen, null
-        )
-    }
-
-    override fun run() {
-        if (delay != 0L) {
-            val tmp = delay
-            delay = 0
-            view.postOnAnimationDelayed(this, tmp)
-        } else {
-            val which_droid_color = if (step == 10) GREEN else RED
-            val which_eye_color = if (step == 10) BLACK else ORANGE
-            for (number in which_ones) {
-                val bounds = droids[row][number].bounds
-                droids[row][number] = falling_droid[step]!!.constantState.newDrawable()
-                droids[row][number].setColorFilter(which_droid_color, SRC_ATOP)
-                droids[row][number].bounds = bounds
-                eyes[row][number] = falling_eyes[step]!!.constantState.newDrawable()
-                eyes[row][number].setColorFilter(which_eye_color, SRC_ATOP)
-                eyes[row][number].bounds = bounds
-                view.invalidate()
-            }
-            step = step.inc()
-            if (step < 11)
-                view.postOnAnimationDelayed(this, 50)
-        }
-    }
-}
-
-class Rising_Droids_Animation(
-        private val view: Nim_Game_View,
-        private val droids: Array<Array<Drawable>>, private val eyes: Array<Array<Drawable>>
-) : Runnable {
-
-    private var step : Int = 0
-    private val rising_droid : Array<Drawable?> = Array(12, { null })
-    private val rising_eyes : Array<Drawable?> = Array(12, { null })
-
-    init {
-        rising_droid[0] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_standing, null
-        )
-        rising_droid[1] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_falling1, null
-        )
-        rising_droid[2] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_falling2, null
-        )
-        rising_droid[3] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_falling3, null
-        )
-        rising_droid[4] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_falling4, null
-        )
-        rising_droid[5] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_falling5, null
-        )
-        rising_droid[6] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_falling6, null
-        )
-        rising_droid[7] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_falling7, null
-        )
-        rising_droid[8] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_falling8, null
-        )
-        rising_droid[9] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_falling9, null
-        )
-        rising_droid[10] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_falling10, null
-        )
-        rising_droid[11] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_fallen, null
-        )
-        rising_eyes[0] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_eyes_standing, null
-        )
-        rising_eyes[1] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_eyes_falling1, null
-        )
-        rising_eyes[2] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_eyes_falling2, null
-        )
-        rising_eyes[3] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_eyes_falling3, null
-        )
-        rising_eyes[4] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_eyes_falling4, null
-        )
-        rising_eyes[5] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_eyes_falling5, null
-        )
-        rising_eyes[6] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_eyes_falling6, null
-        )
-        rising_eyes[7] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_eyes_falling7, null
-        )
-        rising_eyes[8] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_eyes_falling8, null
-        )
-        rising_eyes[9] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_eyes_falling9, null
-        )
-        rising_eyes[10] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_eyes_falling10, null
-        )
-        rising_eyes[11] = ResourcesCompat.getDrawable(
-                view.resources, R.drawable.ic_android_eyes_fallen, null
-        )
-    }
-
-    override fun run() {
-        val which_droid_color = if (step == 11) GREEN else RED
-        val which_eye_color = if (step == 11) ORANGE else BLACK
-        for (row in 0.until(droids.size))
-            for (number in 0.until(droids[row].size)) {
-                val bounds = droids[row][number].bounds
-                droids[row][number] = rising_droid[11 - step]!!.constantState.newDrawable()
-                droids[row][number].setColorFilter(which_droid_color, SRC_ATOP)
-                droids[row][number].bounds = bounds
-                eyes[row][number] = rising_eyes[11 - step]!!.constantState.newDrawable()
-                eyes[row][number].setColorFilter(which_eye_color, SRC_ATOP)
-                eyes[row][number].bounds = bounds
-                view.invalidate()
-            }
-        step = step.inc()
-        if (step < 12)
-            view.postOnAnimationDelayed(this, 50)
-    }
 }
