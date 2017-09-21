@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="horizontal"
     android:gravity="center"
-    android:background="#ccc"
+    android:background="#666"
     tools:context="name.cantanima.droidnim.MainActivity">
 
     <TextView
@@ -19,6 +19,7 @@
         android:textSize="36sp"
         android:layout_weight="1"
         android:minEms="2"
+        android:textColor="@color/white"
         tools:ignore="HardcodedText"/>
 
     <Space
@@ -30,7 +31,7 @@
         android:id="@+id/game_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="#ccc"
+        android:background="#888"
         android:layout_weight="4"
         />
 
