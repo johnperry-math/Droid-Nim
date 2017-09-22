@@ -7,13 +7,16 @@
         body {
             background: rgb(224, 224, 240) none repeat scroll 0% 50%;
         }
+        .strikeupdiag {
+            background: linear-gradient(to left top, transparent 47.75%, currentColor 49.5%, currentColor 50.5%, transparent 52.25%);
+        }
+        .strikedndiag {
+            background: linear-gradient(to left bottom, transparent 47.75%, currentColor 49.5%, currentColor 50.5%, transparent 52.25%);
+        }
     </style>
 </head>
 <body>
 <h1><a name="top">Droid Nim</a></h1>
-<center>
-    Dedicated to the memory of Leo Christopherson, author of Android Nim (1978).
-</center>
 <ul>
     <li><a href="#idea">The idea</a></li>
     <li><a href="#gameplay">Gameplay</a></li>
@@ -27,11 +30,18 @@
 Droid Nim is a game that challenges the mind while illustrating some advanced mathematical ideas.
 It can be difficult to defeat the computer if you don&rsquo;t know what you&rsquo;re doing,
 and even if you do, one slip-up can cost you the game.
-
+<p></p>
 <a href="#top">Back to the top</a>
 
 <h2><a name="gameplay">Gameplay</a></h2>
 
+This section is divided into the following subsections:
+<ul>
+    <li><a href="#basic">Basic gameplay</a></li>
+    <li><a href="#human">Playing a human</a></li>
+</ul>
+
+<h3><a name="basic">Basic gameplay</a></h3>
 To play, choose any row, and any standing droid in that row.
 If you hold your finger on that droids,
 all the standing droids left of that droid will change color.
@@ -42,7 +52,7 @@ the leftmost droids will deactivate the other highlighted droids, which will col
 
 At this point, your opponent will do the same thing.
 
-There are two ways of playing the game.
+<a name="winning"></a>There are two ways of playing the game.
 <ul>
     <li>In <b>normal play</b>, the last player to deactivate a droid wins.</li>
     <li>In <b>mis&egrave;re play</b>, the last player to deactivate a droid loses.</li>
@@ -50,19 +60,77 @@ There are two ways of playing the game.
 
 Normal play is the default, but you can change to mis&egrave;re play using the Settings.
 
+<h3><a name="human">Playing a human</a></h3>
+You can play a nearby human using Bluetooth!
+To do so, touch the two-player icon in the toolbar.
+<p align="center"></p>
+The app will automatically enable Bluetooth if it is available on your device,
+but you can only play a device with which you are already paired,
+and the app will not pair two devices for you.
+To pair devices, go into your device&rsquo;s Settings (<i>not</i> the app&rsquo;s Options),
+select Bluetooth, and select a device you want to pair.
+Both you and your opponent must pair your devices before you can play!
+<p></p>
+Once your devices are paired, you can decide whether to host or join a game.
+One player will host the game, while the other player will join.
+The player who joins has to play whatever game is on the host&rsquo;s device,
+which puts him at a disadvantage; to counter that, the player who joins gets to go first.
+<p></p>
+When the game ends, the Bluetooth connection is disconnected, but Bluetooth is left on.
+To play again, you need to touch the two-player icon again,
+and decide whether to host or join. (You will not need to re-pair your devices.)
+If you do not want to play again, you should probably turn off Bluetooth,
+unless you&rsquo;re using it with other devices.
+You can do that in your device&rsquo;s Settings (<i>not</i> the app&rsquo;s Options).
+<p></p>
+We strongly discourage you from adjusting <a href="#options">game options</a>
+in the middle of a two-player game!
+Depending on the changes you make, the game will restart, and communication will be lost.
+This prevents someone from changing the criterion for winning mid-course.
+<p></p>
+
 <a href="#top">Back to the top</a>
 
 <h2><a name="options">Options</a></h2>
 
-
-
+If you select the &ldquo;Settings&rdquo; (gear) icon in the toolbar,
+several options will appear, along with some explanations.
+Here&rsquo;s a little more detail on how some of them work.
+<p></p>
+<b>One arm behind my back</b> &mdash;
+If a winning move is available, the computer will find it.
+If you check this box, however, the computer will sometimes &mdash; <i>sometimes</i> &mdash;
+&ldquo;make a mistake&rdquo; and choose a random square
+even when it knows a different square would guarantee a win!
+<p></p>
+<b>Mis&egrave;re play</b> &mdash;
+Ordinarily, the game decides winners and losers according to normal play.
+If you check this box, the game decide winners and losers according to mis&egrave;re play.
+(The difference between these two <a href="#winning">is explained above.</a>)
+<i>Think before you do this</i> as it will start a new game!
+<p></p>
 <a href="#top">Back to the top</a>
 
 <h2><a name="mathematics">Mathematical ideas behind the game</a></h2>
 
 Droid Nim incorporates ideas from <b>number theory</b> and <b>combinatorial game theory</b>.
 You can determine a &ldquo;value&rdquo; of a game by writing each row as a sum of powers of two,
-and canceling any matching powers. For a winning strategy:
+and canceling any matching powers.
+For instance, if
+<ul>
+    <li>row 1 has 6 droids,</li>
+    <li>row 2 has 3 droids, and</li>
+    <li>row 3 has 4 droids,</li>
+</ul>
+then as powers of 2,
+<ul>
+    <li>row 1 has 4 + 2 droids,</li>
+    <li>row 2 has 2 + 1 droids, and</li>
+    <li>row 3 has 4 droids.</li>
+</ul>
+After canceling matching powers, we see that the game&rsquo;s value is
+<center>(<span class="strikeupdiag"><b>4</b></span> + <span class="strikedndiag"><i>2</i></span>) + (<span class="strikedndiag"><i>2</i></span> + 1) + (<span class="strikeupdiag"><b>4</b></span>) = 1 .</center>
+For a winning strategy:
 <ul>
     <li>In normal play you want the game&rsquo;s value to be 0 at the end of your turn.</li>
     <li>
@@ -70,8 +138,11 @@ and canceling any matching powers. For a winning strategy:
         <i>except</i> that you want to leave an odd number of rows with one element.
     </li>
 </ul>
+In the example above, then, we should remove 1 droid from row 2,
+as all the powers will subsequently cancel.
+<p></p>
 You can read more about <a href="https://en.wikipedia.org/wiki/Nim">Nim</a> if you like.
-
+<p></p>
 <a href="#top">Back to the top</a>
 
 <h2><a name="credits">Credits</a></h2>
@@ -84,6 +155,8 @@ You can read more about <a href="https://en.wikipedia.org/wiki/Nim">Nim</a> if y
     The source code is available at
     <a href="https://github.com/johnperry-math/IdealNim">GitHub</a>
     under the GPL license.
+    <p></p>
+    Dedicated to the memory of Leo Christopherson, author of Android Nim (1978).
     <p></p>
     <p></p>
     <a href="#top">Back to the top</a>

@@ -43,6 +43,7 @@ class New_Game_Dialog(
         row_text!!.setText(row_string, 0, row_string.size)
         val md_string = max_droids.toString().toCharArray()
         max_droid_text!!.setText(md_string, 0, md_string.size)
+        setCancelable(false)
     }
 
     override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {

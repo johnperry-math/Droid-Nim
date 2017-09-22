@@ -1,0 +1,65 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                  xmlns:sample="http://schemas.android.com/apk/res-auto"
+                  xmlns:tools="http://schemas.android.com/tools">
+
+    <PreferenceCategory
+        android:title="@string/pref_category_gameplay"
+        tools:summary="@string/gameplay_category_summary">
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/stupid_pref_key"
+            android:summary="@string/stupid_pref_summary"
+            android:title="@string/stupid_pref_title"/>
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/misere_pref_key"
+            android:summary="@string/misere_pref_summary"
+            android:title="@string/misere_pref_title"/>
+
+    </PreferenceCategory>
+    
+    <PreferenceCategory
+        android:title="@string/pref_category_color"
+        tools:summary="@string/colors_category_summary">
+
+        <yuku.ambilwarna.widget.AmbilWarnaPreference
+            android:key="@string/color_droid_happy_key"
+            android:defaultValue="0xff00ff00"
+            android:title="@string/color_droid_happy_title"
+            android:summary="@string/color_droid_happy_summ"/>
+
+        <yuku.ambilwarna.widget.AmbilWarnaPreference
+            android:key="@string/color_droid_worry_key"
+            android:defaultValue="0xffff0000"
+            android:title="@string/color_droid_worry_title"
+            android:summary="@string/color_droid_worry_summ"/>
+
+        <yuku.ambilwarna.widget.AmbilWarnaPreference
+            android:key="@string/color_droid_deact_key"
+            android:defaultValue="0xff008800"
+            android:title="@string/color_droid_deact_title"
+            android:summary="@string/color_droid_deact_summ"/>
+
+        <yuku.ambilwarna.widget.AmbilWarnaPreference
+            android:key="@string/color_eyes_happy_key"
+            android:defaultValue="0xffff8000"
+            android:title="@string/color_eyes_happy_title"
+            android:summary="@string/color_eyes_happy_summ"/>
+
+        <yuku.ambilwarna.widget.AmbilWarnaPreference
+            android:key="@string/color_eyes_worry_key"
+            android:defaultValue="0xffffffff"
+            android:title="@string/color_eyes_worry_title"
+            android:summary="@string/color_eyes_worry_summ"/>
+
+        <yuku.ambilwarna.widget.AmbilWarnaPreference
+            android:key="@string/color_eyes_deact_key"
+            android:defaultValue="0xff000000"
+            android:title="@string/color_eyes_deact_title"
+            android:summary="@string/color_eyes_deact_summ"/>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

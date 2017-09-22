@@ -95,8 +95,8 @@ class Falling_Droids_Animation(
             delay = 0
             view.postOnAnimationDelayed(this, tmp)
         } else {
-            val which_droid_color = if (step == 10) Color.GREEN else Color.RED
-            val which_eye_color = if (step == 10) Color.BLACK else ORANGE
+            val which_droid_color = if (step == 10) view.color_deact_droid else view.color_worry_droid
+            val which_eye_color = if (step == 10) view.color_deact_eyes else view.color_worry_eyes
             for (number in which_ones) {
                 val bounds = droids[row][number].bounds
                 droids[row][number] = falling_droid[step]!!.constantState.newDrawable()
@@ -105,8 +105,8 @@ class Falling_Droids_Animation(
                 eyes[row][number] = falling_eyes[step]!!.constantState.newDrawable()
                 eyes[row][number].setColorFilter(which_eye_color, PorterDuff.Mode.SRC_ATOP)
                 eyes[row][number].bounds = bounds
-                view.invalidate()
             }
+            view.invalidate()
             step = step.inc()
             if (step < 11)
                 view.postOnAnimationDelayed(this, 25)
@@ -199,8 +199,8 @@ class Rising_Droids_Animation(
     }
 
     override fun run() {
-        val which_droid_color = if (step == 11) Color.GREEN else Color.RED
-        val which_eye_color = if (step == 11) ORANGE else Color.BLACK
+        val which_droid_color = if (step == 11) view.color_happy_droid else view.color_deact_droid
+        val which_eye_color = if (step == 11) view.color_happy_eyes else view.color_deact_eyes
         for (row in 0.until(droids.size))
             for (number in 0.until(droids[row].size)) {
                 val bounds = droids[row][number].bounds
@@ -210,8 +210,8 @@ class Rising_Droids_Animation(
                 eyes[row][number] = rising_eyes[11 - step]!!.constantState.newDrawable()
                 eyes[row][number].setColorFilter(which_eye_color, PorterDuff.Mode.SRC_ATOP)
                 eyes[row][number].bounds = bounds
-                view.invalidate()
             }
+        view.invalidate()
         step = step.inc()
         if (step < 12)
             view.postOnAnimationDelayed(this, 25)
