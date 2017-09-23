@@ -49,10 +49,11 @@ class Nim_Game_View
     private val eyes_standing = ResourcesCompat.getDrawable(
             resources, R.drawable.ic_android_eyes_standing, null
     )
-    private var droids_to_draw : Array<Array<Drawable>> = Array(
+    private val sentinels = Array(3, {droid_standing!!.constantState.newDrawable() })
+    private var droids_to_draw = Array(
             3, { Array(7 - 2*it, { droid_standing!!.constantState.newDrawable() }) }
     )
-    private var eyes_to_draw :  Array<Array<Drawable>> = Array(
+    private var eyes_to_draw = Array(
             3, { Array(7 - 2*it, { eyes_standing!!.constantState.newDrawable() }) }
     )
 
@@ -102,6 +103,9 @@ class Nim_Game_View
 
         pebble_paint.color = GREEN
         highlight_paint.color = RED
+        for (sentinel in sentinels)
+            sentinel.setColorFilter(color_happy_droid, SRC_ATOP)
+        
         setOnTouchListener(this)
         opponent = Computer_Opponent(sometimes_stupid)
         if (!isInEditMode) {
@@ -215,7 +219,6 @@ class Nim_Game_View
                 )
             }
         }
-        //invalidate()
         Rising_Droids_Animation(this, droids_to_draw, eyes_to_draw).run()
     }
 
@@ -225,7 +228,6 @@ class Nim_Game_View
         val contentWidth = width - paddingLeft - paddingRight
         val contentHeight = height - paddingTop - paddingBottom
 
-        val droid = ResourcesCompat.getDrawable(resources, R.drawable.ic_android_standing, null)
         val droid_eyes = ResourcesCompat.getDrawable(resources, R.drawable.ic_android_eyes_standing, null)
 
         var pebble_width = contentWidth / (max_pebbles.toFloat() + 1.5f)
@@ -234,7 +236,7 @@ class Nim_Game_View
         else row_height = pebble_width
         val start_y = contentHeight / 2 - row_height * game.rows.size / 2
         for ((i, row) in game.rows.withIndex()) {
-            droid!!.setBounds(
+            sentinels[i].setBounds(
                     paddingLeft, (start_y + row_height * i).toInt(),
                     paddingLeft + pebble_width.toInt(), (start_y + row_height * (i + 1)).toInt()
             )
@@ -242,14 +244,8 @@ class Nim_Game_View
                     paddingLeft, (start_y + row_height * i).toInt(),
                     paddingLeft + pebble_width.toInt(), (start_y + row_height * (i + 1)).toInt()
             )
-            if (highlight && (i == target_row)) {
-                droid.setColorFilter(color_worry_droid, SRC_ATOP)
-                droid_eyes.setColorFilter(color_worry_eyes, SRC_ATOP)
-            } else {
-                droid.setColorFilter(color_happy_droid, SRC_ATOP)
-                droid_eyes.setColorFilter(color_happy_eyes, SRC_ATOP)
-            }
-            droid.draw(canvas)
+            droid_eyes.setColorFilter(color_happy_eyes, SRC_ATOP)
+            sentinels[i].draw(canvas)
             droid_eyes.draw(canvas)
             val pebble_targeted = target_pebble + orig_num_droids[i] - row.pebbles
             val first_living_droid = orig_num_droids[i] - row.pebbles
@@ -305,9 +301,11 @@ class Nim_Game_View
                     val curr_pebbles = orig_num_droids[target_row] - game.rows[target_row].pebbles
                     var finished = game.play(Move(target_row, target_pebble))
                     val humans_choices = curr_pebbles.until(pebble_targeted)
+                    Sentinels_Rising_Arm(this, sentinels, target_row, true).run()
+                    Sentinels_Rising_Arm(this, sentinels, target_row, false, 600).run()
                     Falling_Droids_Animation(
                             this, droids_to_draw, eyes_to_draw,
-                            target_row, humans_choices
+                            target_row, humans_choices, 350
                     ).run()
                     highlight = false
                     var human_last = true
@@ -327,9 +325,11 @@ class Nim_Game_View
                                             orig_num_droids[last_move.row] -
                                                     game.rows[last_move.row].pebbles
                                     )
+                            Sentinels_Rising_Arm(this, sentinels, last_move.row, true, 1000).run()
+                            Sentinels_Rising_Arm(this, sentinels, last_move.row, false, 1600).run()
                             Falling_Droids_Animation(
                                     this, droids_to_draw, eyes_to_draw,
-                                    last_move.row, opponents_choices, 1000
+                                    last_move.row, opponents_choices, 1350
                             ).run()
                         }
                     }
@@ -359,9 +359,11 @@ class Nim_Game_View
         val curr_pebbles = orig_num_droids[target_row] - game.rows[target_row].pebbles
         val pebble_targeted = target_pebble + curr_pebbles
         val humans_choices = curr_pebbles.until(pebble_targeted)
+        Sentinels_Rising_Arm(this, sentinels, last_move.row, true).run()
+        Sentinels_Rising_Arm(this, sentinels, last_move.row, false, 600).run()
         Falling_Droids_Animation(
                 this, droids_to_draw, eyes_to_draw,
-                target_row, humans_choices
+                target_row, humans_choices, 350
         ).run()
         val finished = game.play(last_move)
         if (finished) {

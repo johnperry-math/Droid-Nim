@@ -16,7 +16,7 @@ class Falling_Droids_Animation(
         private var delay: Long = 0
 ) : Runnable {
 
-    private var step : Int = 0
+    private var step = 0
     private val falling_droid : Array<Drawable?> = Array(11, { null })
     private val falling_eyes : Array<Drawable?> = Array(11, { null })
 
