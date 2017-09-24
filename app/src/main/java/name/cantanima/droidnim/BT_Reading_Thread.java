@@ -31,6 +31,7 @@ public class BT_Reading_Thread extends AsyncTask<Object, Integer, Boolean> {
       size = bt_input_stream.read(info);
       success = true;
       failure_message = "";
+      if (info[0] == 0 && info[1] == 0) bt_socket.close();
     } catch (IOException e) {
       success = false;
       failure_message = e.getMessage();
@@ -62,6 +63,8 @@ public class BT_Reading_Thread extends AsyncTask<Object, Integer, Boolean> {
           .setMessage(message)
           .setPositiveButton(context.getString(R.string.understood), null)
           .show();
+      Nim_Game_View view = ((Nim_Game_View) ((MainActivity) context).findViewById(R.id.game_view));
+      view.emergency_start_game();
     }
   }
 

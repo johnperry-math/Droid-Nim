@@ -8,7 +8,6 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Color.*
 import android.graphics.Paint
-import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.View
 import android.graphics.PorterDuff.Mode.SRC_ATOP
@@ -17,10 +16,12 @@ import android.support.annotation.ColorInt
 import android.support.v4.content.res.ResourcesCompat
 import android.support.v7.app.AlertDialog
 import android.util.Log
+import android.view.Gravity
 import android.view.MotionEvent
 import android.view.MotionEvent.*
 import android.widget.TextView
 import android.view.View.OnTouchListener
+import android.widget.Toast
 import java.util.*
 
 @ColorInt
@@ -49,7 +50,7 @@ class Nim_Game_View
     private val eyes_standing = ResourcesCompat.getDrawable(
             resources, R.drawable.ic_android_eyes_standing, null
     )
-    private val sentinels = Array(3, {droid_standing!!.constantState.newDrawable() })
+    private var sentinels = Array(3, { droid_standing!!.mutate().constantState.newDrawable() })
     private var droids_to_draw = Array(
             3, { Array(7 - 2*it, { droid_standing!!.constantState.newDrawable() }) }
     )
@@ -151,7 +152,11 @@ class Nim_Game_View
                 if (human_last xor game.misere) context.resources.getStringArray(R.array.win_insults)
                 else context.resources.getStringArray(R.array.lose_insults)
         val message =
-                if (sometimes_stupid) {
+                if (kind_of_opponent == Player_Kind.HUMAN) {
+                    if (human_last xor game.misere) context.getString(R.string.two_player_won)
+                    else context.getString(R.string.two_player_lost)
+                }
+                else if (sometimes_stupid) {
                     if (human_last xor game.misere) context.getString(R.string.you_won) + " " +
                             all_insults[0]
                     else context.getString(R.string.i_won) + " " + all_insults[0]
@@ -161,12 +166,21 @@ class Nim_Game_View
                     else context.getString(R.string.i_won) + " " +
                             all_insults[random.nextInt(all_insults.size - 1) + 1]
                 }
+        if (kind_of_opponent == Player_Kind.HUMAN) {
+            kind_of_opponent = Player_Kind.COMPUTER
+            opponent = Computer_Opponent(sometimes_stupid)
+        }
         game_over_dialog = AlertDialog.Builder(context)
                 .setTitle(context.getString(R.string.game_over))
                 .setMessage(message)
                 .setPositiveButton(context.getString(R.string.again_cur), this)
                 .setCancelable(false)
                 .show()
+    }
+
+    fun emergency_start_game() {
+        kind_of_opponent = Player_Kind.COMPUTER
+        start_game(game.rows.size, max_pebbles)
     }
 
     fun start_game(rows : Int, max_pebbles_per_row : Int) {
@@ -191,6 +205,8 @@ class Nim_Game_View
 
     private fun draw_initial_game() {
         val rows = game.rows.size
+        sentinels = Array(rows, { droid_standing!!.mutate().constantState.newDrawable() })
+        for (sentinel in sentinels) sentinel.setColorFilter(color_happy_droid, SRC_ATOP)
         droids_to_draw = Array(
                 rows, { Array(game.rows[it].pebbles, { droid_standing!!.constantState.newDrawable() }) }
         )
@@ -247,7 +263,7 @@ class Nim_Game_View
             droid_eyes.setColorFilter(color_happy_eyes, SRC_ATOP)
             sentinels[i].draw(canvas)
             droid_eyes.draw(canvas)
-            val pebble_targeted = target_pebble + orig_num_droids[i] - row.pebbles
+            val pebble_targeted = minOf(orig_num_droids[i], target_pebble + orig_num_droids[i] - row.pebbles)
             val first_living_droid = orig_num_droids[i] - row.pebbles
             if (highlight && i == target_row) {
                 for (j in first_living_droid.until(pebble_targeted)) {
@@ -289,6 +305,8 @@ class Nim_Game_View
             if (x in start_x..end_x && y in start_y..end_y) {
                 target_row = (y - start_y).toInt() / (row_height).toInt()
                 target_row = minOf(target_row, game.rows.size - 1)
+                val first_droid_in_row = orig_num_droids[target_row] -
+                        game.rows[target_row].pebbles + 1
                 val pebble_targeted = (x - start_x).toInt() / pebble_width.toInt() + 1
                 target_pebble =
                         pebble_targeted -
@@ -296,51 +314,53 @@ class Nim_Game_View
                 if (target_pebble < 0) target_pebble = 0
                 val action = p1.actionMasked
                 if (action == ACTION_DOWN || action == ACTION_MOVE) {
-                    highlight = true
+                    if (pebble_targeted in first_droid_in_row..orig_num_droids[target_row])
+                        highlight = true
                 } else if (action == ACTION_UP && highlight) {
-                    val curr_pebbles = orig_num_droids[target_row] - game.rows[target_row].pebbles
-                    var finished = game.play(Move(target_row, target_pebble))
-                    val humans_choices = curr_pebbles.until(pebble_targeted)
-                    Sentinels_Rising_Arm(this, sentinels, target_row, true).run()
-                    Sentinels_Rising_Arm(this, sentinels, target_row, false, 600).run()
-                    Falling_Droids_Animation(
-                            this, droids_to_draw, eyes_to_draw,
-                            target_row, humans_choices, 350
-                    ).run()
                     highlight = false
-                    var human_last = true
-                    val my_opponent : Opponent? = opponent
-                    if (!finished && my_opponent != null) {
-                        human_last = false
-                        finished = my_opponent.make_a_move()
+                    if (
+                        game.rows[target_row].pebbles != 0 &&
+                                pebble_targeted in first_droid_in_row..orig_num_droids[target_row]
+                    ) { // no cheating!
                         if (kind_of_opponent == Player_Kind.HUMAN)
-                            (my_opponent as Human_Opponent).notify_of_move(Move(target_row, target_pebble))
-                        else {
-                            val last_move = my_opponent.last_move
-                            val opponents_choices =
-                                    (
-                                            orig_num_droids[last_move.row] -
-                                                    game.rows[last_move.row].pebbles - last_move.number
-                                            ).until(
-                                            orig_num_droids[last_move.row] -
-                                                    game.rows[last_move.row].pebbles
-                                    )
-                            Sentinels_Rising_Arm(this, sentinels, last_move.row, true, 1000).run()
-                            Sentinels_Rising_Arm(this, sentinels, last_move.row, false, 1600).run()
-                            Falling_Droids_Animation(
-                                    this, droids_to_draw, eyes_to_draw,
-                                    last_move.row, opponents_choices, 1350
-                            ).run()
+                            (opponent as Human_Opponent).notify_of_move(Move(target_row, target_pebble))
+                        val curr_pebbles = orig_num_droids[target_row] - game.rows[target_row].pebbles
+                        var finished = game.play(Move(target_row, target_pebble))
+                        val humans_choices = curr_pebbles.until(pebble_targeted)
+                        Sentinels_Rising_Arm(this, sentinels, target_row, true).run()
+                        Sentinels_Rising_Arm(this, sentinels, target_row, false, 600).run()
+                        Falling_Droids_Animation(
+                                this, droids_to_draw, eyes_to_draw,
+                                target_row, humans_choices, 350
+                        ).run()
+                        var human_last = true
+                        val my_opponent: Opponent? = opponent
+                        if (!finished && my_opponent != null) {
+                            human_last = false
+                            finished = my_opponent.make_a_move()
+                            if (kind_of_opponent == Player_Kind.COMPUTER) {
+                                val last_move = my_opponent.last_move
+                                val opponents_choices =
+                                        (
+                                                orig_num_droids[last_move.row] -
+                                                        game.rows[last_move.row].pebbles - last_move.number
+                                                ).until(
+                                                orig_num_droids[last_move.row] -
+                                                        game.rows[last_move.row].pebbles
+                                        )
+                                Sentinels_Rising_Arm(this, sentinels, last_move.row, true, 1000).run()
+                                Sentinels_Rising_Arm(this, sentinels, last_move.row, false, 1600).run()
+                                Falling_Droids_Animation(
+                                        this, droids_to_draw, eyes_to_draw,
+                                        last_move.row, opponents_choices, 1350
+                                ).run()
+                            }
                         }
-                    }
-                    if (finished) {
-                        if (kind_of_opponent == Player_Kind.HUMAN) {
-                            (my_opponent as Human_Opponent).notify_of_move(Move(target_row, target_pebble))
-                            (context as MainActivity).two_player_game_ended()
-                            kind_of_opponent = Player_Kind.COMPUTER
-                            opponent = Computer_Opponent(sometimes_stupid)
+                        if (finished) {
+                            if (kind_of_opponent == Player_Kind.HUMAN)
+                                (context as MainActivity).two_player_game_ended()
+                            declare_winner(human_last)
                         }
-                        declare_winner(human_last)
                     }
                 }
                 invalidate()
@@ -352,7 +372,7 @@ class Nim_Game_View
 
         return result
     }
-    
+
     fun get_human_move(last_move : Move) {
         target_row = last_move.row
         target_pebble = last_move.number
@@ -368,10 +388,6 @@ class Nim_Game_View
         val finished = game.play(last_move)
         if (finished) {
             (context as MainActivity).two_player_game_ended()
-            if (kind_of_opponent == Player_Kind.HUMAN) {
-                kind_of_opponent = Player_Kind.COMPUTER
-                opponent = Computer_Opponent(sometimes_stupid)
-            }
             declare_winner(false)
         }
     }
@@ -388,11 +404,11 @@ class Nim_Game_View
         if (i_am_hosting) {
             invalidate()
             bt_ideal_raw[0] = game.rows.size.toByte()
-            Log.d(tag, game.rows.size.toString())
-            var i = 1
+            bt_ideal_raw[1] = if (misere) 1.toByte() else 0.toByte()
+            var i = 2
             for (row in game.rows) {
                 bt_ideal_raw[i] = row.pebbles.toByte()
-                i = i.inc()
+                i += 1
             }
             val writing_thread = BT_Writing_Thread(context, socket)
             writing_thread.execute(bt_ideal_raw)
@@ -405,7 +421,18 @@ class Nim_Game_View
     }
 
     override fun received_data(size: Int, data: ByteArray) {
-        val positions = Array(data[0].toInt(), { it -> data[it + 1].toInt() })
+        misere = data[1] == 1.toByte()
+        val edit = PreferenceManager.getDefaultSharedPreferences(context).edit()
+        edit.putBoolean(context.getString(R.string.misere_pref_key), misere)
+        edit.apply()
+        val toast = Toast.makeText(
+                context,
+                if (misere) R.string.bt_toast_misere_play else R.string.bt_toast_normal_play,
+                Toast.LENGTH_LONG
+        )
+        toast.setGravity(Gravity.TOP, 0, 0)
+        toast.show()
+        val positions = Array(data[0].toInt(), { it -> data[it + 2].toInt() })
         orig_num_droids = positions.toIntArray()
         game = Nim_Game(orig_num_droids, misere)
         max_pebbles = game.max_size()

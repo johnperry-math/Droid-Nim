@@ -1,0 +1,27 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="ClassName" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="namePattern" value="[A-Z][_A-Za-z\d]*" />
+    </inspection_tool>
+    <inspection_tool class="EnumEntryName" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="namePattern" value="[A-Z]([_A-Za-z\d]*|[_A-Z_\d]*)" />
+    </inspection_tool>
+    <inspection_tool class="FunctionName" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="namePattern" value="[a-z][_A-Za-z\d]*" />
+    </inspection_tool>
+    <inspection_tool class="LocalVariableName" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="namePattern" value="[a-z][_A-Za-z\d]*" />
+    </inspection_tool>
+    <inspection_tool class="PackageName" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="namePattern" value="[a-z][_A-Za-z\d]*(\.[a-z][_A-Za-z\d]*)*" />
+    </inspection_tool>
+    <inspection_tool class="PrivatePropertyName" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="namePattern" value="_?[a-z][_A-Za-z\d]*" />
+    </inspection_tool>
+    <inspection_tool class="PropertyName" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="namePattern" value="[A-Za-z][_A-Za-z\d]*" />
+    </inspection_tool>
+    <inspection_tool class="UseExpressionBody" enabled="true" level="WARNING" enabled_by_default="true" />
+  </profile>
+</component>

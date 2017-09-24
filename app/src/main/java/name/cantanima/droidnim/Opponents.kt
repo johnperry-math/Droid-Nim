@@ -93,14 +93,15 @@ class Human_Opponent(private val game_view : Nim_Game_View, private val bt_socke
     : Opponent(), BTR_Listener
 {
 
-    private val bt_raw_data = arrayOfNulls<Byte>(3)
+    private val bt_raw_data = arrayOfNulls<Byte>(4)
 
     fun notify_of_move(M: Move) {
         bt_raw_data[0] = 2.toByte()
         bt_raw_data[1] = M.row.toByte()
         bt_raw_data[2] = M.number.toByte()
+        bt_raw_data[3] = 0.toByte()
         val bt_writer = BT_Writing_Thread(game_view.context, bt_socket)
-        bt_writer.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, bt_raw_data)
+        bt_writer.execute(bt_raw_data)
     }
 
     override fun make_a_move(): Boolean {
@@ -112,8 +113,8 @@ class Human_Opponent(private val game_view : Nim_Game_View, private val bt_socke
     }
 
     override fun received_data(size: Int, data: ByteArray?) {
-        val P = Move(data!![1].toInt(), data[2].toInt())
-        game_view.get_human_move(P)
+        val p = Move(data!![1].toInt(), data[2].toInt())
+        game_view.get_human_move(p)
     }
 
 }

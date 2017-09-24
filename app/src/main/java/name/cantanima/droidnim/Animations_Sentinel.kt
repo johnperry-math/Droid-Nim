@@ -1,11 +1,8 @@
 package name.cantanima.droidnim
 
-import android.graphics.Color.GREEN
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
 import android.support.v4.content.res.ResourcesCompat
-import name.cantanima.droidnim.Nim_Game_View
-import name.cantanima.droidnim.R
 
 /**
  * File containing animations of sentinels raising and lowering arms.
@@ -14,7 +11,7 @@ class Sentinels_Rising_Arm(
         private val view : Nim_Game_View,
         private val sentinels : Array<Drawable>,
         private val which_one : Int,
-        private val forward : Boolean,
+        forward : Boolean,
         private var delay: Long = 0
 ) : Runnable {
 
@@ -71,7 +68,7 @@ class Sentinels_Rising_Arm(
             view.postOnAnimationDelayed(this, tmp)
         } else {
             sentinels[which_one] = frames[step]!!.constantState.newDrawable()
-            sentinels[which_one].setColorFilter(GREEN, PorterDuff.Mode.SRC_ATOP)
+            sentinels[which_one].setColorFilter(view.color_happy_droid, PorterDuff.Mode.SRC_ATOP)
             view.invalidate()
             step += delta
             if (step in range)
