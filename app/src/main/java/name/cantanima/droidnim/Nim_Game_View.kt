@@ -498,7 +498,8 @@ class Nim_Game_View
         }
     }
 
-    fun bore_droid(row: Int, droid: Int) = monitor.add_droid(this, droids_to_draw, row, droid)
+    fun bore_droid(row: Int, droid: Int) =
+            monitor.add_droid(this, droids_to_draw, eyes_to_draw, row, droid)
 
 }
 
@@ -506,9 +507,18 @@ class Nim_Game_View
 class Monitor_Bored_Droids {
 
     private val bored_droids = LinkedList<Bored_Droids_Animation>()
+    private val random = Random()
 
-    fun add_droid(view: Nim_Game_View, droids: Array<Array<Drawable>>, row: Int, num: Int) {
-        val anim = Tapping_Droids_Animation(this, view, droids, row, num)
+    fun add_droid(
+            view: Nim_Game_View,
+            droids: Array<Array<Drawable>>, eyes: Array<Array<Drawable>>,
+            row: Int, num: Int
+    ) {
+        val anim = when (random.nextInt(2)) {
+            0 -> Stretching_Droids_Animation(this, view, droids, eyes, row, num)
+            else -> Tapping_Droids_Animation(this, view, droids, eyes, row, num)
+        }
+
         bored_droids.add(anim)
         anim.run()
     }
