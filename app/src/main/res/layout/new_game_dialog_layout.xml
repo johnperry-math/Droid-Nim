@@ -3,22 +3,29 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
     android:orientation="vertical"
-    android:weightSum="6">
-
-    <!--TextView
-        android:layout_width="match_parent"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:text="@string/new_game_dialog_title"
-        android:layout_height="wrap_content"
-        android:textSize="24sp"
-        android:layout_weight="2"/>-->
+    android:weightSum="8">
 
     <Space
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         />
+
+    <CheckBox
+        android:id="@+id/repeat_game_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="false"
+        android:layout_weight="1"
+        android:text="@string/repeat_game_label"/>
+
+    <CheckBox
+        android:id="@+id/boutons_game_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="false"
+        android:layout_weight="1"
+        android:text="@string/boutons_game_label"/>
 
     <TextView
         android:layout_width="wrap_content"

@@ -217,6 +217,20 @@ class Nim_Game_View
         draw_initial_game()
     }
 
+    fun start_bouton_game() {
+        max_pebbles = 7
+        orig_num_droids = intArrayOf(7, 5, 3)
+        game = Nim_Game(orig_num_droids, misere)
+        opponent!!.prepare_for_new_game(game)
+        draw_initial_game()
+    }
+
+    fun start_repeat_last_game() {
+        game = Nim_Game(orig_num_droids, misere)
+        opponent!!.prepare_for_new_game(game)
+        draw_initial_game()
+    }
+
     private fun draw_initial_game() {
         val rows = game.rows.size
         sentinels = Array(rows, { droid_standing!!.mutate().constantState.newDrawable() })

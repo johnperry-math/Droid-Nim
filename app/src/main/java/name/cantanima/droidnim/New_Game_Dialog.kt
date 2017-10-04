@@ -2,28 +2,29 @@ package name.cantanima.droidnim
 
 import android.app.Dialog
 import android.content.Context
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
-import android.view.Window
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.SeekBar
 import android.widget.TextView
 
 /**
- * Created by cantanima on 9/16/17.
+ * Dialog for a new game of Droid Nim.
  */
 class New_Game_Dialog(
-        val my_context: Context, val game_view: Nim_Game_View,
-        var num_rows : Int, var max_droids: Int
+        private val my_context: Context, private val game_view: Nim_Game_View,
+        private var num_rows : Int, private var max_droids: Int
 ) :
         Dialog(my_context), View.OnClickListener, SeekBar.OnSeekBarChangeListener
 {
-    var row_seekbar : SeekBar? = null
-    var max_droid_seekbar : SeekBar? = null
-    var row_text : TextView? = null
-    var max_droid_text : TextView? = null
-    var go_button : Button? = null
+    private var row_seekbar : SeekBar? = null
+    private var max_droid_seekbar : SeekBar? = null
+    private var row_text : TextView? = null
+    private var max_droid_text : TextView? = null
+    private var go_button : Button? = null
+    private var bouton_checkbox : CheckBox? = null
+    private var repeat_checkbox : CheckBox? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,16 +34,20 @@ class New_Game_Dialog(
         max_droid_seekbar = findViewById(R.id.sb_max_droids)
         row_text = findViewById(R.id.tv_number_of_rows)
         max_droid_text = findViewById(R.id.tv_max_droids)
-        go_button = findViewById<Button>(R.id.new_dialog_go_button)
-        row_seekbar!!.setProgress(num_rows - 3)
+        go_button = findViewById(R.id.new_dialog_go_button)
+        bouton_checkbox = findViewById(R.id.boutons_game_checkbox)
+        repeat_checkbox = findViewById(R.id.repeat_game_checkbox)
+        row_seekbar!!.progress = num_rows - 3
         row_seekbar!!.setOnSeekBarChangeListener(this)
-        max_droid_seekbar!!.setProgress(max_droids - 5)
+        max_droid_seekbar!!.progress = max_droids - 5
         max_droid_seekbar!!.setOnSeekBarChangeListener(this)
         go_button!!.setOnClickListener(this)
         val row_string = num_rows.toString().toCharArray()
         row_text!!.setText(row_string, 0, row_string.size)
         val md_string = max_droids.toString().toCharArray()
         max_droid_text!!.setText(md_string, 0, md_string.size)
+        bouton_checkbox!!.setOnClickListener(this)
+        repeat_checkbox!!.setOnClickListener(this)
         setCancelable(false)
     }
 
@@ -65,11 +70,26 @@ class New_Game_Dialog(
     }
 
     override fun onClick(p0: View?) {
-        val rsb = row_seekbar
-        val mdsb = max_droid_seekbar
-        if (rsb != null && mdsb != null) {
-            game_view.start_game(rsb.progress + 3, mdsb.progress + 5)
-            dismiss()
+        if (p0 == go_button) {
+            if (bouton_checkbox!!.isChecked) {
+                dismiss()
+                game_view.start_bouton_game()
+            } else if (repeat_checkbox!!.isChecked) {
+                dismiss()
+                game_view.start_repeat_last_game()
+            } else {
+                game_view.start_game(row_seekbar!!.progress + 3, max_droid_seekbar!!.progress + 5)
+                dismiss()
+            }
+        } else if (p0 == bouton_checkbox) {
+            row_seekbar!!.isEnabled = !row_seekbar!!.isEnabled
+            max_droid_seekbar!!.isEnabled = !max_droid_seekbar!!.isEnabled
+            repeat_checkbox!!.isEnabled = !repeat_checkbox!!.isEnabled
+        } else if (p0 == repeat_checkbox) {
+            row_seekbar!!.isEnabled = !row_seekbar!!.isEnabled
+            max_droid_seekbar!!.isEnabled = !max_droid_seekbar!!.isEnabled
+            bouton_checkbox!!.isEnabled = !bouton_checkbox!!.isEnabled
+
         }
     }
 
