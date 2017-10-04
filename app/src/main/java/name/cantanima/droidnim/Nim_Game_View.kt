@@ -51,12 +51,18 @@ class Nim_Game_View
     private val eyes_standing = ResourcesCompat.getDrawable(
             resources, R.drawable.ic_android_eyes_standing, null
     )
+    private val mouth_standing = ResourcesCompat.getDrawable(
+            resources, R.drawable.ic_mouth_standing, null
+    )
     private var sentinels = Array(3, { droid_standing!!.mutate().constantState.newDrawable() })
     private var droids_to_draw = Array(
             3, { Array(7 - 2*it, { droid_standing!!.constantState.newDrawable() }) }
     )
     private var eyes_to_draw = Array(
             3, { Array(7 - 2*it, { eyes_standing!!.constantState.newDrawable() }) }
+    )
+    private var mouths_to_draw = Array(
+            3, { Array(7 - 2*it, { mouth_standing!!.constantState.newDrawable() }) }
     )
 
     private val monitor = Monitor_Bored_Droids()
@@ -66,10 +72,13 @@ class Nim_Game_View
     private var highlight_paint = Paint()
     var color_happy_droid = GREEN
     var color_happy_eyes = ORANGE
+    var color_happy_mouth = ORANGE
     var color_worry_droid = RED
     var color_worry_eyes = WHITE
+    var color_worry_mouth = YELLOW
     var color_deact_droid = DARK_GREEN
     var color_deact_eyes = BLACK
+    var color_deact_mouth = BLACK
 
     private var value_view : TextView? = null
 
@@ -218,6 +227,9 @@ class Nim_Game_View
         eyes_to_draw = Array(
                 rows, { Array(game.rows[it].pebbles, { eyes_standing!!.constantState.newDrawable() }) }
         )
+        mouths_to_draw = Array(
+                rows, { Array(game.rows[it].pebbles, { mouth_standing!!.constantState.newDrawable() }) }
+        )
         val contentWidth = width - paddingLeft - paddingRight
         val contentHeight = height - paddingTop - paddingBottom
         var pebble_width = contentWidth / (max_pebbles.toFloat() + 1.5f)
@@ -238,9 +250,14 @@ class Nim_Game_View
                         start_x, (start_y + row_height * i).toInt(),
                         (start_x + pebble_width).toInt(), (start_y + row_height * (i + 1)).toInt()
                 )
+                mouths_to_draw[i][j].setColorFilter(color_happy_mouth, SRC_ATOP)
+                mouths_to_draw[i][j].setBounds(
+                        start_x, (start_y + row_height * i).toInt(),
+                        (start_x + pebble_width).toInt(), (start_y + row_height * (i + 1)).toInt()
+                )
             }
         }
-        Rising_Droids_Animation(this, droids_to_draw, eyes_to_draw).run()
+        Rising_Droids_Animation(this, droids_to_draw, eyes_to_draw, mouths_to_draw).run()
         borer = Bore_A_Droid(this, game)
         borer!!.run()
     }
@@ -252,6 +269,7 @@ class Nim_Game_View
         val contentHeight = height - paddingTop - paddingBottom
 
         val droid_eyes = ResourcesCompat.getDrawable(resources, R.drawable.ic_android_eyes_standing, null)
+        val droid_mouth = ResourcesCompat.getDrawable(resources, R.drawable.ic_mouth_standing, null)
 
         var pebble_width = contentWidth / (max_pebbles.toFloat() + 1.5f)
         var row_height = contentHeight / (game.rows.size.toFloat())
@@ -268,24 +286,34 @@ class Nim_Game_View
                     paddingLeft + pebble_width.toInt(), (start_y + row_height * (i + 1)).toInt()
             )
             droid_eyes.setColorFilter(color_happy_eyes, SRC_ATOP)
+            droid_mouth!!.setBounds(
+                    paddingLeft, (start_y + row_height * i).toInt(),
+                    paddingLeft + pebble_width.toInt(), (start_y + row_height * (i + 1)).toInt()
+            )
+            droid_mouth.setColorFilter(color_happy_mouth, SRC_ATOP)
             sentinels[i].draw(canvas)
             droid_eyes.draw(canvas)
+            droid_mouth.draw(canvas)
             val pebble_targeted = minOf(orig_num_droids[i], target_pebble + orig_num_droids[i] - row.pebbles)
             val first_living_droid = orig_num_droids[i] - row.pebbles
             if (highlight && i == target_row) {
                 for (j in first_living_droid.until(pebble_targeted)) {
                     droids_to_draw[i][j].mutate().setColorFilter(color_worry_droid, SRC_ATOP)
                     eyes_to_draw[i][j].mutate().setColorFilter(color_worry_eyes, SRC_ATOP)
+                    mouths_to_draw[i][j].mutate().setColorFilter(color_worry_mouth, SRC_ATOP)
                 }
             }
             for (draw_droid in droids_to_draw[i])
                 draw_droid.draw(canvas)
             for (draw_eyes in eyes_to_draw[i])
                 draw_eyes.draw(canvas)
+            for (draw_mouth in mouths_to_draw[i])
+                draw_mouth.draw(canvas)
             if (highlight && i == target_row) {
                 for (j in first_living_droid.until(pebble_targeted)) {
                     droids_to_draw[i][j].mutate().setColorFilter(color_happy_droid, SRC_ATOP)
                     eyes_to_draw[i][j].mutate().setColorFilter(color_happy_eyes, SRC_ATOP)
+                    mouths_to_draw[i][j].mutate().setColorFilter(color_happy_mouth, SRC_ATOP)
                 }
             }
         }
@@ -338,7 +366,7 @@ class Nim_Game_View
                         Sentinels_Rising_Arm(this, sentinels, target_row, true).run()
                         Sentinels_Rising_Arm(this, sentinels, target_row, false, 600).run()
                         Falling_Droids_Animation(
-                                this, droids_to_draw, eyes_to_draw,
+                                this, droids_to_draw, eyes_to_draw, mouths_to_draw,
                                 target_row, humans_choices, 350
                         ).run()
                         var human_last = true
@@ -360,7 +388,7 @@ class Nim_Game_View
                                 Sentinels_Rising_Arm(this, sentinels, last_move.row, true, 1000).run()
                                 Sentinels_Rising_Arm(this, sentinels, last_move.row, false, 1600).run()
                                 Falling_Droids_Animation(
-                                        this, droids_to_draw, eyes_to_draw,
+                                        this, droids_to_draw, eyes_to_draw, mouths_to_draw,
                                         last_move.row, opponents_choices, 1350
                                 ).run()
                             }
@@ -392,7 +420,7 @@ class Nim_Game_View
         Sentinels_Rising_Arm(this, sentinels, last_move.row, true).run()
         Sentinels_Rising_Arm(this, sentinels, last_move.row, false, 600).run()
         Falling_Droids_Animation(
-                this, droids_to_draw, eyes_to_draw,
+                this, droids_to_draw, eyes_to_draw, mouths_to_draw,
                 target_row, humans_choices, 350
         ).run()
         val finished = game.play(last_move)
