@@ -12,10 +12,12 @@ abstract class Bored_Droids_Animation : Runnable {
     abstract val view: Nim_Game_View
     abstract val droids: Array<Array<Drawable>>
     abstract val eyes: Array<Array<Drawable>>
+    abstract val mouths: Array<Array<Drawable>>
     abstract val row: Int
     abstract val which_one: Int
     abstract val frame: Array<Drawable?>
     abstract val eye_frame: Array<Drawable?>
+    abstract val mouth_frame: Array<Drawable?>
     abstract val repetitions: Int
     abstract var delay: Long
     private var performed = 0
@@ -32,6 +34,9 @@ abstract class Bored_Droids_Animation : Runnable {
             eyes[row][which_one] = eye_frame[step]!!.constantState.newDrawable()
             eyes[row][which_one].setColorFilter(view.color_happy_eyes, PorterDuff.Mode.SRC_ATOP)
             eyes[row][which_one].bounds = bounds
+            mouths[row][which_one] = mouth_frame[step]!!.constantState.newDrawable()
+            mouths[row][which_one].setColorFilter(view.color_happy_mouth, PorterDuff.Mode.SRC_ATOP)
+            mouths[row][which_one].bounds = bounds
             view.invalidate()
             ++step
             when { // I find this less readable than if / else if / else but it shuts up lint
@@ -66,12 +71,14 @@ class Tapping_Droids_Animation constructor(
         override val view: Nim_Game_View,
         override val droids: Array<Array<Drawable>>,
         override val eyes: Array<Array<Drawable>>,
+        override val mouths: Array<Array<Drawable>>,
         override val row: Int, override val which_one: Int
 ): Bored_Droids_Animation() {
 
     override val repetitions = 2
     override val frame: Array<Drawable?> = Array(13, { null })
     override val eye_frame: Array<Drawable?> = Array(13, { null })
+    override val mouth_frame: Array<Drawable?> = Array(13, { null })
     override var delay = 30L
 
     init {
@@ -154,6 +161,45 @@ class Tapping_Droids_Animation constructor(
         eye_frame[12] = ResourcesCompat.getDrawable(
                 view.resources, R.drawable.ic_android_eyes_standing, null
         )
+        mouth_frame[0] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_whistling1, null
+        )
+        mouth_frame[1] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_whistling2, null
+        )
+        mouth_frame[2] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_whistling3, null
+        )
+        mouth_frame[3] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_whistling4, null
+        )
+        mouth_frame[4] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_whistling5, null
+        )
+        mouth_frame[5] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_whistling6, null
+        )
+        mouth_frame[6] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_whistling7, null
+        )
+        mouth_frame[7] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_whistling8, null
+        )
+        mouth_frame[8] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_whistling8, null
+        )
+        mouth_frame[9] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_whistling6, null
+        )
+        mouth_frame[10] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_whistling4, null
+        )
+        mouth_frame[11] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_whistling2, null
+        )
+        mouth_frame[12] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_whistling1, null
+        )
     }
 
 }
@@ -166,12 +212,14 @@ class Stretching_Droids_Animation constructor(
         override val view: Nim_Game_View,
         override val droids: Array<Array<Drawable>>,
         override val eyes: Array<Array<Drawable>>,
+        override val mouths: Array<Array<Drawable>>,
         override val row: Int, override val which_one: Int
 ): Bored_Droids_Animation() {
 
     override val repetitions = 0
     override val frame: Array<Drawable?> = Array(29, { null })
     override val eye_frame: Array<Drawable?> = Array(29, { null })
+    override val mouth_frame: Array<Drawable?> = Array(29, { null })
     override var delay = 50L
 
     init {
@@ -352,6 +400,96 @@ class Stretching_Droids_Animation constructor(
         )
         eye_frame[28] = ResourcesCompat.getDrawable(
                 view.resources, R.drawable.ic_android_eyes_standing, null
+        )
+        mouth_frame[0] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_stretching1, null
+        )
+        mouth_frame[1] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_stretching1, null
+        )
+        mouth_frame[2] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_stretching2, null
+        )
+        mouth_frame[3] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_stretching2, null
+        )
+        mouth_frame[4] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_stretching3, null
+        )
+        mouth_frame[5] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_stretching3, null
+        )
+        mouth_frame[6] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_stretching4, null
+        )
+        mouth_frame[7] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_stretching4, null
+        )
+        mouth_frame[8] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_stretching5, null
+        )
+        mouth_frame[9] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_stretching5, null
+        )
+        mouth_frame[10] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_stretching6, null
+        )
+        mouth_frame[11] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_stretching6, null
+        )
+        mouth_frame[12] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_stretching7, null
+        )
+        mouth_frame[13] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_stretching7, null
+        )
+        mouth_frame[13] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_stretching7, null
+        )
+        mouth_frame[14] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_stretching7, null
+        )
+        mouth_frame[15] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_stretching7, null
+        )
+        mouth_frame[16] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_stretching7, null
+        )
+        mouth_frame[17] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_stretching6, null
+        )
+        mouth_frame[18] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_stretching6, null
+        )
+        mouth_frame[19] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_stretching5, null
+        )
+        mouth_frame[20] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_stretching5, null
+        )
+        mouth_frame[21] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_stretching4, null
+        )
+        mouth_frame[22] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_stretching4, null
+        )
+        mouth_frame[23] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_stretching3, null
+        )
+        mouth_frame[24] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_stretching3, null
+        )
+        mouth_frame[25] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_stretching2, null
+        )
+        mouth_frame[26] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_stretching2, null
+        )
+        mouth_frame[27] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_stretching1, null
+        )
+        mouth_frame[28] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_stretching1, null
         )
     }
 
