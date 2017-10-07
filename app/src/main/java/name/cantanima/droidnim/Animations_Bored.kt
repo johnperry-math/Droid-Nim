@@ -45,8 +45,10 @@ abstract class Bored_Droids_Animation : Runnable {
                 performed < repetitions -> {
                     step = 0; ++performed; view.postOnAnimationDelayed(this, delay)
                 }
-                else ->
+                else -> {
                     monitor.finished_droid(this)
+                    view.finished_boring_droid(row, which_one)
+                }
             }
         }
     }
@@ -490,6 +492,210 @@ class Stretching_Droids_Animation constructor(
         )
         mouth_frame[28] = ResourcesCompat.getDrawable(
                 view.resources, R.drawable.ic_mouth_stretching1, null
+        )
+    }
+
+}
+
+/**
+ * Animations of bored droids
+ */
+class Dancing_Droids_Animation constructor(
+        override val monitor: Monitor_Bored_Droids,
+        override val view: Nim_Game_View,
+        override val droids: Array<Array<Drawable>>,
+        override val eyes: Array<Array<Drawable>>,
+        override val mouths: Array<Array<Drawable>>,
+        override val row: Int, override val which_one: Int
+): Bored_Droids_Animation() {
+
+    override val repetitions = 2
+    override val frame: Array<Drawable?> = Array(20, { null })
+    override val eye_frame: Array<Drawable?> = Array(20, { null })
+    override val mouth_frame: Array<Drawable?> = Array(20, { null })
+    override var delay = 30L
+
+    init {
+        bounds = droids[row][which_one].bounds
+        frame[0] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_android_dancing1, null
+        )
+        frame[1] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_android_dancing2, null
+        )
+        frame[2] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_android_dancing3, null
+        )
+        frame[3] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_android_dancing4, null
+        )
+        frame[4] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_android_dancing5, null
+        )
+        frame[5] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_android_dancing4, null
+        )
+        frame[6] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_android_dancing3, null
+        )
+        frame[7] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_android_dancing2, null
+        )
+        frame[8] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_android_dancing1, null
+        )
+        frame[9] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_android_standing, null
+        )
+        frame[10] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_android_dancing10, null
+        )
+        frame[11] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_android_dancing9, null
+        )
+        frame[12] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_android_dancing8, null
+        )
+        frame[13] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_android_dancing7, null
+        )
+        frame[14] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_android_dancing6, null
+        )
+        frame[15] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_android_dancing7, null
+        )
+        frame[16] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_android_dancing8, null
+        )
+        frame[17] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_android_dancing9, null
+        )
+        frame[18] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_android_dancing10, null
+        )
+        frame[19] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_android_standing, null
+        )
+        eye_frame[0] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_eyes_dancing1, null
+        )
+        eye_frame[1] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_eyes_dancing2, null
+        )
+        eye_frame[2] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_eyes_dancing3, null
+        )
+        eye_frame[3] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_eyes_dancing4, null
+        )
+        eye_frame[4] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_eyes_dancing5, null
+        )
+        eye_frame[5] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_eyes_dancing4, null
+        )
+        eye_frame[6] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_eyes_dancing3, null
+        )
+        eye_frame[7] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_eyes_dancing2, null
+        )
+        eye_frame[8] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_eyes_dancing1, null
+        )
+        eye_frame[9] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_android_eyes_standing, null
+        )
+        eye_frame[10] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_eyes_dancing6, null
+        )
+        eye_frame[11] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_eyes_dancing7, null
+        )
+        eye_frame[12] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_eyes_dancing8, null
+        )
+        eye_frame[13] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_eyes_dancing9, null
+        )
+        eye_frame[14] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_eyes_dancing10, null
+        )
+        eye_frame[15] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_eyes_dancing9, null
+        )
+        eye_frame[16] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_eyes_dancing8, null
+        )
+        eye_frame[17] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_eyes_dancing7, null
+        )
+        eye_frame[18] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_eyes_dancing6, null
+        )
+        eye_frame[19] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_android_eyes_standing, null
+        )
+        mouth_frame[0] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_standing, null
+        )
+        mouth_frame[1] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_standing, null
+        )
+        mouth_frame[2] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_standing, null
+        )
+        mouth_frame[3] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_standing, null
+        )
+        mouth_frame[4] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_standing, null
+        )
+        mouth_frame[5] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_standing, null
+        )
+        mouth_frame[6] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_standing, null
+        )
+        mouth_frame[7] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_standing, null
+        )
+        mouth_frame[8] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_standing, null
+        )
+        mouth_frame[9] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_standing, null
+        )
+        mouth_frame[10] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_standing, null
+        )
+        mouth_frame[11] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_standing, null
+        )
+        mouth_frame[12] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_standing, null
+        )
+        mouth_frame[13] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_standing, null
+        )
+        mouth_frame[14] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_standing, null
+        )
+        mouth_frame[15] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_standing, null
+        )
+        mouth_frame[16] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_standing, null
+        )
+        mouth_frame[17] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_standing, null
+        )
+        mouth_frame[18] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_standing, null
+        )
+        mouth_frame[19] = ResourcesCompat.getDrawable(
+                view.resources, R.drawable.ic_mouth_standing, null
         )
     }
 

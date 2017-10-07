@@ -91,6 +91,11 @@ class Nim_Game(row_pebbles: IntArray, val misere : Boolean = false) {
     fun value() = rows.fold(0, { a, b -> a xor b.pebbles })
 
     /**
+     * Returns the number of pebbles remaining.
+     */
+    fun number_of_pebbles() = rows.fold(0, { a, b -> a + b.pebbles })
+
+    /**
      * Returns a string representation of the object.
      */
     override fun toString() = rows.fold("", { a, b -> a + b.toString() + "\n" })

@@ -273,7 +273,7 @@ class Nim_Game_View
         }
         Rising_Droids_Animation(this, droids_to_draw, eyes_to_draw, mouths_to_draw).run()
         borer = Bore_A_Droid(this, game)
-        borer!!.run()
+        postOnAnimationDelayed(borer, 3000)
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -367,16 +367,17 @@ class Nim_Game_View
                         highlight = true
                 } else if (action == ACTION_UP && highlight) {
                     highlight = false
-                    if (
+                    if ( // no cheating!
                         game.rows[target_row].pebbles != 0 &&
                                 pebble_targeted in first_droid_in_row..orig_num_droids[target_row]
-                    ) { // no cheating!
+                    ) {
                         if (kind_of_opponent == Player_Kind.HUMAN)
                             (opponent as Human_Opponent).notify_of_move(Move(target_row, target_pebble))
                         val curr_pebbles = orig_num_droids[target_row] - game.rows[target_row].pebbles
                         var finished = game.play(Move(target_row, target_pebble))
                         val humans_choices = curr_pebbles.until(pebble_targeted)
                         monitor.stop_droids(target_row, humans_choices)
+                        borer!!.stop_droids(target_row, humans_choices)
                         Sentinels_Rising_Arm(this, sentinels, target_row, true).run()
                         Sentinels_Rising_Arm(this, sentinels, target_row, false, 600).run()
                         Falling_Droids_Animation(
@@ -399,6 +400,7 @@ class Nim_Game_View
                                                         game.rows[last_move.row].pebbles
                                         )
                                 monitor.stop_droids(last_move.row, opponents_choices)
+                                borer!!.stop_droids(last_move.row, opponents_choices)
                                 Sentinels_Rising_Arm(this, sentinels, last_move.row, true, 1000).run()
                                 Sentinels_Rising_Arm(this, sentinels, last_move.row, false, 1600).run()
                                 Falling_Droids_Animation(
@@ -431,6 +433,7 @@ class Nim_Game_View
         val pebble_targeted = target_pebble + curr_pebbles
         val humans_choices = curr_pebbles.until(pebble_targeted)
         monitor.stop_droids(target_row, humans_choices)
+        borer!!.stop_droids(target_row, humans_choices)
         Sentinels_Rising_Arm(this, sentinels, last_move.row, true).run()
         Sentinels_Rising_Arm(this, sentinels, last_move.row, false, 600).run()
         Falling_Droids_Animation(
@@ -543,6 +546,8 @@ class Nim_Game_View
     fun bore_droid(row: Int, droid: Int) =
             monitor.add_droid(this, droids_to_draw, eyes_to_draw, mouths_to_draw, row, droid)
 
+    fun finished_boring_droid(row: Int, droid: Int) = borer!!.finished_droid(row, droid)
+
 }
 
 
@@ -557,8 +562,9 @@ class Monitor_Bored_Droids {
             mouths: Array<Array<Drawable>>,
             row: Int, num: Int
     ) {
-        val anim = when (random.nextInt(2)) {
+        val anim = when (random.nextInt(3)) {
             0 -> Stretching_Droids_Animation(this, view, droids, eyes, mouths, row, num)
+            1 -> Dancing_Droids_Animation(this, view, droids, eyes, mouths, row, num)
             else -> Tapping_Droids_Animation(this, view, droids, eyes, mouths, row, num)
         }
 
@@ -567,18 +573,17 @@ class Monitor_Bored_Droids {
     }
 
     fun stop_droids(row: Int, which_ones: IntRange) {
+        val droids_to_remove = LinkedList<Bored_Droids_Animation>()
         for (anim in bored_droids) {
             if (anim.row == row && anim.which_one in which_ones) {
                 anim.stop()
-                bored_droids.remove(anim)
-                break
+                droids_to_remove.add(anim)
             }
         }
+        bored_droids.removeAll(droids_to_remove)
     }
 
-    fun finished_droid(anim: Bored_Droids_Animation) {
-        bored_droids.remove(anim)
-    }
+    fun finished_droid(anim: Bored_Droids_Animation) = bored_droids.remove(anim)
 
 }
 
@@ -588,20 +593,43 @@ class Bore_A_Droid(
 
     private val random = Random()
     private var valid = true
+    private val currently_bored = TreeSet<Int>()
 
     override fun run() {
-        if (valid) {
+        if (valid and (game.number_of_pebbles() != currently_bored.size)) {
             var row: Int
             var active_droids: Int
-            do {
-                row = random.nextInt(game.rows.size)
-                active_droids = view.orig_num_droids[row] - game.rows[row].pebbles
-            } while (active_droids == view.orig_num_droids[row])
-            view.bore_droid(row, active_droids + random.nextInt(game.rows[row].pebbles))
-            view.postOnAnimationDelayed(this, 3000)
+            var searching = true
+            while (searching) {
+                do {
+                    row = random.nextInt(game.rows.size)
+                    active_droids = view.orig_num_droids[row] - game.rows[row].pebbles
+                } while (active_droids == view.orig_num_droids[row])
+                val droid_to_bore = active_droids + random.nextInt(game.rows[row].pebbles)
+                if (!currently_bored.contains(row * 10 + droid_to_bore)) {
+                    currently_bored.add(row * 10 + droid_to_bore)
+                    view.bore_droid(row, droid_to_bore)
+                    searching = false
+                }
+            }
         }
+        val delay = 2000 + (if (random.nextBoolean()) -1 else 1) * random.nextInt(1000).toLong()
+        view.postOnAnimationDelayed(this,
+                delay
+        )
     }
 
+    fun finished_droid(row: Int, droid: Int) {
+        currently_bored.remove(row * 10 + droid)
+    }
+
+    fun stop_droids(row: Int, which_ones: IntRange) {
+        currently_bored.removeAll { it -> (row == it / 10) and (which_ones.contains(it - row * 10)) }
+        /*for (droid in which_ones) {
+            if (currently_bored.contains(row * 10 + droid))
+                currently_bored.remove(row * 10 + droid)
+        }*/
+    }
     fun stop() { valid = false }
 
 }

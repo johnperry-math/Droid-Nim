@@ -70,26 +70,28 @@ class New_Game_Dialog(
     }
 
     override fun onClick(p0: View?) {
-        if (p0 == go_button) {
-            if (bouton_checkbox!!.isChecked) {
+        when (p0) {
+            go_button -> {
                 dismiss()
-                game_view.start_bouton_game()
-            } else if (repeat_checkbox!!.isChecked) {
-                dismiss()
-                game_view.start_repeat_last_game()
-            } else {
-                game_view.start_game(row_seekbar!!.progress + 3, max_droid_seekbar!!.progress + 5)
-                dismiss()
+                when {
+                    bouton_checkbox!!.isChecked ->  game_view.start_bouton_game()
+                    repeat_checkbox!!.isChecked -> game_view.start_repeat_last_game()
+                    else ->
+                        game_view.start_game(
+                                row_seekbar!!.progress + 3, max_droid_seekbar!!.progress + 5
+                        )
+                }
             }
-        } else if (p0 == bouton_checkbox) {
-            row_seekbar!!.isEnabled = !row_seekbar!!.isEnabled
-            max_droid_seekbar!!.isEnabled = !max_droid_seekbar!!.isEnabled
-            repeat_checkbox!!.isEnabled = !repeat_checkbox!!.isEnabled
-        } else if (p0 == repeat_checkbox) {
-            row_seekbar!!.isEnabled = !row_seekbar!!.isEnabled
-            max_droid_seekbar!!.isEnabled = !max_droid_seekbar!!.isEnabled
-            bouton_checkbox!!.isEnabled = !bouton_checkbox!!.isEnabled
-
+            bouton_checkbox -> {
+                row_seekbar!!.isEnabled = !row_seekbar!!.isEnabled
+                max_droid_seekbar!!.isEnabled = !max_droid_seekbar!!.isEnabled
+                repeat_checkbox!!.isEnabled = !repeat_checkbox!!.isEnabled
+            }
+            repeat_checkbox -> {
+                row_seekbar!!.isEnabled = !row_seekbar!!.isEnabled
+                max_droid_seekbar!!.isEnabled = !max_droid_seekbar!!.isEnabled
+                bouton_checkbox!!.isEnabled = !bouton_checkbox!!.isEnabled
+            }
         }
     }
 
