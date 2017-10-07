@@ -124,7 +124,6 @@ class Nim_Game_View
         opponent = Computer_Opponent(sometimes_stupid)
         if (!isInEditMode) {
             
-            new_game_dialog()
             val pref = PreferenceManager.getDefaultSharedPreferences(context)
             if (
                 !pref.contains(context.getString(R.string.version_pref)) or (
@@ -138,6 +137,8 @@ class Nim_Game_View
                 )
                 editor.apply()
                 (context as MainActivity).show_welcome()
+            } else {
+                new_game_dialog()
             }
             sometimes_stupid = pref.getBoolean(context.getString(R.string.stupid_pref_key), false)
             opponent = Computer_Opponent(sometimes_stupid)

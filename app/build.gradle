@@ -8,15 +8,20 @@ android {
         applicationId "name.cantanima.droidnim"
         minSdkVersion 16
         targetSdkVersion 26
-        versionCode 4
-        versionName "1.0.2"
+        versionCode 7
+        versionName "1.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
+        debug {
+            versionNameSuffix ".debug"
+            resValue "string", "app_version", "${defaultConfig.versionName}${versionNameSuffix}"
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            resValue "string", "app_version", "${defaultConfig.versionName}"
         }
     }
 }

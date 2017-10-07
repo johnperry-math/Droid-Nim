@@ -72,7 +72,6 @@ class New_Game_Dialog(
     override fun onClick(p0: View?) {
         when (p0) {
             go_button -> {
-                dismiss()
                 when {
                     bouton_checkbox!!.isChecked ->  game_view.start_bouton_game()
                     repeat_checkbox!!.isChecked -> game_view.start_repeat_last_game()
@@ -81,6 +80,7 @@ class New_Game_Dialog(
                                 row_seekbar!!.progress + 3, max_droid_seekbar!!.progress + 5
                         )
                 }
+                dismiss()
             }
             bouton_checkbox -> {
                 row_seekbar!!.isEnabled = !row_seekbar!!.isEnabled

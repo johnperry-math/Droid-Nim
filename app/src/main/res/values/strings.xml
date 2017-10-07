@@ -6,7 +6,7 @@
 
     <string name="app_welcome_title">Welcome!</string>
     <string name="app_welcome_message_start">Thank you for trying Droid Nim!</string>
-    <string name="app_version">1.0.1</string>
+    <!--string name="app_version">1.1</string>-->
     <string name="app_welcome_message_end">
         On your turn, select a droid standing in the groups on the right.
         The leftmost droid will deactivate it and all droids between them.
