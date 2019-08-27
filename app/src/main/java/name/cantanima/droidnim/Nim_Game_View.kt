@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Color.*
 import android.graphics.Paint
 import android.util.AttributeSet
@@ -13,10 +12,9 @@ import android.view.View
 import android.graphics.PorterDuff.Mode.SRC_ATOP
 import android.graphics.drawable.Drawable
 import android.preference.PreferenceManager
-import android.support.annotation.ColorInt
 import android.support.v4.content.res.ResourcesCompat
 import android.support.v7.app.AlertDialog
-import android.util.Log
+//import android.util.Log
 import android.view.Gravity
 import android.view.MotionEvent
 import android.view.MotionEvent.*
@@ -25,9 +23,8 @@ import android.view.View.OnTouchListener
 import android.widget.Toast
 import java.util.*
 
-@ColorInt
-val ORANGE = Color.argb(0xff, 0xff, 0x80, 0x00)
-val DARK_GREEN = Color.argb(0xff, 0x00, 0x88, 0x00)
+val ORANGE = argb(0xff, 0xff, 0x80, 0x00)
+val DARK_GREEN = argb(0xff, 0x00, 0x88, 0x00)
 
 enum class Player_Kind { COMPUTER, HUMAN }
 
@@ -54,16 +51,10 @@ class Nim_Game_View
     private val mouth_standing = ResourcesCompat.getDrawable(
             resources, R.drawable.ic_mouth_standing, null
     )
-    private var sentinels = Array(3, { droid_standing!!.mutate().constantState.newDrawable() })
-    private var droids_to_draw = Array(
-            3, { Array(7 - 2*it, { droid_standing!!.constantState.newDrawable() }) }
-    )
-    private var eyes_to_draw = Array(
-            3, { Array(7 - 2*it, { eyes_standing!!.constantState.newDrawable() }) }
-    )
-    private var mouths_to_draw = Array(
-            3, { Array(7 - 2*it, { mouth_standing!!.constantState.newDrawable() }) }
-    )
+    private var sentinels = Array(3) { droid_standing!!.mutate().constantState!!.newDrawable() }
+    private var droids_to_draw = Array(3) { Array(7 - 2*it) { droid_standing!!.constantState!!.newDrawable() } }
+    private var eyes_to_draw = Array(3) { Array(7 - 2*it) { eyes_standing!!.constantState!!.newDrawable() } }
+    private var mouths_to_draw = Array(3) { Array(7 - 2*it) { mouth_standing!!.constantState!!.newDrawable() } }
 
     private val monitor = Monitor_Bored_Droids()
     private var borer : Bore_A_Droid? = null
@@ -234,17 +225,11 @@ class Nim_Game_View
 
     private fun draw_initial_game() {
         val rows = game.rows.size
-        sentinels = Array(rows, { droid_standing!!.mutate().constantState.newDrawable() })
+        sentinels = Array(rows) { droid_standing!!.mutate().constantState!!.newDrawable() }
         for (sentinel in sentinels) sentinel.setColorFilter(color_happy_droid, SRC_ATOP)
-        droids_to_draw = Array(
-                rows, { Array(game.rows[it].pebbles, { droid_standing!!.constantState.newDrawable() }) }
-        )
-        eyes_to_draw = Array(
-                rows, { Array(game.rows[it].pebbles, { eyes_standing!!.constantState.newDrawable() }) }
-        )
-        mouths_to_draw = Array(
-                rows, { Array(game.rows[it].pebbles, { mouth_standing!!.constantState.newDrawable() }) }
-        )
+        droids_to_draw = Array(rows) { Array(game.rows[it].pebbles) { droid_standing!!.constantState!!.newDrawable() } }
+        eyes_to_draw = Array(rows)  { Array(game.rows[it].pebbles) { eyes_standing!!.constantState!!.newDrawable() } }
+        mouths_to_draw = Array(rows)  { Array(game.rows[it].pebbles) { mouth_standing!!.constantState!!.newDrawable() } }
         val contentWidth = width - paddingLeft - paddingRight
         val contentHeight = height - paddingTop - paddingBottom
         var pebble_width = contentWidth / (max_pebbles.toFloat() + 1.5f)
@@ -466,11 +451,11 @@ class Nim_Game_View
                 bt_ideal_raw[i] = row.pebbles.toByte()
                 i += 1
             }
-            val writing_thread = BT_Writing_Thread(context, socket)
+            val writing_thread = BT_Writing_Thread(socket)
             writing_thread.execute(bt_ideal_raw)
             other.make_a_move()
         } else {
-            val reading_thread = BT_Reading_Thread(context, socket, this, false)
+            val reading_thread = BT_Reading_Thread(socket, this, false)
             reading_thread.execute()
         }
 
@@ -488,7 +473,7 @@ class Nim_Game_View
         )
         toast.setGravity(Gravity.TOP, 0, 0)
         toast.show()
-        val positions = Array(data[0].toInt(), { it -> data[it + 2].toInt() })
+        val positions = Array(data[0].toInt()) { data[it + 2].toInt() }
         orig_num_droids = positions.toIntArray()
         game = Nim_Game(orig_num_droids, misere)
         max_pebbles = game.max_size()
@@ -625,11 +610,7 @@ class Bore_A_Droid(
     }
 
     fun stop_droids(row: Int, which_ones: IntRange) {
-        currently_bored.removeAll { it -> (row == it / 10) and (which_ones.contains(it - row * 10)) }
-        /*for (droid in which_ones) {
-            if (currently_bored.contains(row * 10 + droid))
-                currently_bored.remove(row * 10 + droid)
-        }*/
+        currently_bored.removeAll { (row == it / 10) and (which_ones.contains(it - row * 10)) }
     }
     fun stop() { valid = false }
 

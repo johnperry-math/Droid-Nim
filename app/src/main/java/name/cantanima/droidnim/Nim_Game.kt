@@ -2,9 +2,6 @@ package name.cantanima.droidnim
 
 /**
  * Classes pertaining to Nim game data.
- * @see Move
- * @see Nim_Row
- * @see Nim_Game
  */
 
 /**
@@ -68,7 +65,7 @@ class Nim_Game(row_pebbles: IntArray, val misere : Boolean = false) {
     var rows: Array<Nim_Row>
 
     init {
-        rows = Array(row_pebbles.size, { i -> Nim_Row(row_pebbles[i]) })
+        rows = Array(row_pebbles.size) { i -> Nim_Row(row_pebbles[i]) }
     }
 
     /**
@@ -82,7 +79,7 @@ class Nim_Game(row_pebbles: IntArray, val misere : Boolean = false) {
      */
     fun play(move : Move) : Boolean {
         rows[move.row].remove(move.number)
-        return !rows.any({ it.pebbles > 0 })
+        return !rows.any { it.pebbles > 0 }
     }
 
     /**

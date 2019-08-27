@@ -6,10 +6,10 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -29,11 +29,14 @@ public class MainActivity
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    context = getApplicationContext();
     setContentView(R.layout.activity_main);
-    TextView value_view = (TextView) findViewById(R.id.value_view);
-    Nim_Game_View game_view = (Nim_Game_View) findViewById(R.id.game_view);
+    TextView value_view = findViewById(R.id.value_view);
+    Nim_Game_View game_view = findViewById(R.id.game_view);
     game_view.set_views(value_view);
   }
+
+  public Context getContext() { return context; }
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
@@ -50,7 +53,7 @@ public class MainActivity
         Intent si = new Intent(this, SettingsActivity.class);
         startActivity(si);
         return true;
-      case R.id.action_twoplayer:
+      /*case R.id.action_twoplayer:
         if (bluetooth_is_available()) {
           if (bt_adapter.isEnabled()) {
             if (bt_thread != null) {
@@ -71,7 +74,7 @@ public class MainActivity
             .setMessage(R.string.achievement_dialog_message)
             .setPositiveButton(R.string.understood, this)
             .show();
-        return true;
+        return true;*/
       case R.id.action_information:
         Intent ii = new Intent(this, Information_Activity.class);
         startActivity(ii);
@@ -83,7 +86,6 @@ public class MainActivity
   }
 
   public void show_welcome() {
-    welcoming = true;
     welcome_dialog = new AlertDialog.Builder(this)
         .setTitle(R.string.app_welcome_title)
         .setMessage(
@@ -99,7 +101,6 @@ public class MainActivity
   public void onClick(DialogInterface dialog, int which) {
 
     if (dialog == welcome_dialog) {
-      welcoming = false;
       ((Nim_Game_View) findViewById(R.id.game_view)).start_game(3, 7);
     } else if (dialog == bluetooth_dialog) {
       if (which != DialogInterface.BUTTON_NEGATIVE) {
@@ -107,7 +108,6 @@ public class MainActivity
         bt_thread.join_game(which);
       }
     } else if (dialog == host_or_join_dialog) {
-      two_player_game = true;
       if (which == DialogInterface.BUTTON_POSITIVE) {
         (new Host_Thread(this)).execute();
       } else {
@@ -136,9 +136,6 @@ public class MainActivity
   /**
    * Dispatch incoming result to the correct fragment.
    *
-   * @param requestCode
-   * @param resultCode
-   * @param data
    */
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -231,7 +228,7 @@ public class MainActivity
 
     }
 
-    public void host_or_join() {
+    void host_or_join() {
 
       host_or_join_dialog = new AlertDialog.Builder(context)
           .setTitle(R.string.bt_host_or_join_title)
@@ -242,7 +239,7 @@ public class MainActivity
 
     }
 
-    public void select_paired_device() {
+    void select_paired_device() {
 
       i_am_hosting = false;
       Set<BluetoothDevice> known_devices = bt_adapter.getBondedDevices();
@@ -272,7 +269,7 @@ public class MainActivity
 
   }
 
-  private class Host_Thread extends AsyncTask<Object, Integer, Boolean> {
+  private static class Host_Thread extends AsyncTask<Object, Integer, Boolean> {
 
     Host_Thread(MainActivity main) { context = main; }
 
@@ -285,11 +282,11 @@ public class MainActivity
     @Override
     protected void onPreExecute() {
       super.onPreExecute();
-      bt_waiting_to_host_dialog = new ProgressDialog(context);
-      bt_waiting_to_host_dialog.setTitle(R.string.bt_waiting_to_host_title);
-      bt_waiting_to_host_dialog.setMessage(getString(R.string.bt_waiting_to_host_message));
-      bt_waiting_to_host_dialog.setIndeterminate(true);
-      bt_waiting_to_host_dialog.show();
+      context.bt_waiting_to_host_dialog = new ProgressDialog(context);
+      context.bt_waiting_to_host_dialog.setTitle(R.string.bt_waiting_to_host_title);
+      context.bt_waiting_to_host_dialog.setMessage(context.getString(R.string.bt_waiting_to_host_message));
+      context.bt_waiting_to_host_dialog.setIndeterminate(true);
+      context.bt_waiting_to_host_dialog.show();
     }
 
     /**
@@ -301,35 +298,34 @@ public class MainActivity
      * @param aBoolean The result of the operation computed by {@link #doInBackground}.
      * @see #onPreExecute
      * @see #doInBackground
-     * @see #onCancelled(Object)
      */
     @Override
     protected void onPostExecute(Boolean aBoolean) {
       super.onPostExecute(aBoolean);
-      bt_waiting_to_host_dialog.dismiss();
+      context.bt_waiting_to_host_dialog.dismiss();
       try {
-        server_socket.close();
+        context.server_socket.close();
       } catch (IOException e) {
         // don't care now
       }
       //Log.d(tag, "disconnected server socket");
-      if (communication_socket.isConnected())
+      if (context.communication_socket.isConnected())
         context.start_human_game();
     }
 
     @Override
     protected Boolean doInBackground(Object[] params) {
 
-      i_am_hosting = true;
-      host_or_join_dialog.dismiss();
-      BluetoothServerSocket server = null;
+      context.i_am_hosting = true;
+      context.host_or_join_dialog.dismiss();
+      BluetoothServerSocket server;
       try {
-        server = bt_adapter.listenUsingInsecureRfcommWithServiceRecord(
-            "Ideal Nim", UUID.fromString(my_uuid)
+        server = context.bt_adapter.listenUsingInsecureRfcommWithServiceRecord(
+            "Ideal Nim", UUID.fromString(context.my_uuid)
         );
-        server_socket = server;
+        context.server_socket = server;
       } catch (IOException e) {
-        String message = getString(R.string.bt_unable_to_host) + " " + e.getMessage();
+        String message = context.getString(R.string.bt_unable_to_host) + " " + e.getMessage();
         //Log.d(tag, message, e);
         new AlertDialog.Builder(context).setTitle(R.string.no_bluetooth_title)
             .setMessage(message)
@@ -337,20 +333,20 @@ public class MainActivity
             .show();
       }
 
-      if (server_socket != null) {
-        BluetoothSocket socket = null;
+      if (context.server_socket != null) {
+        BluetoothSocket socket;
         try {
-          socket = server_socket.accept();
-          communication_socket = socket;
+          socket = context.server_socket.accept();
+          context.communication_socket = socket;
         } catch (IOException e) {
-          String message = getString(R.string.bt_unable_to_host) + " " + e.getMessage();
+          String message = context.getString(R.string.bt_unable_to_host) + " " + e.getMessage();
           //Log.d(tag, message, e);
           new AlertDialog.Builder(context).setTitle(R.string.no_bluetooth_title)
               .setMessage(message)
               .setPositiveButton(R.string.understood, context)
               .show();
         }
-        if (!communication_socket.isConnected()) {
+        if (!context.communication_socket.isConnected()) {
           new AlertDialog.Builder(context).setTitle(R.string.no_bluetooth_title)
               .setMessage(R.string.bt_unable_to_open_stream)
               .setPositiveButton(R.string.understood, context)
@@ -366,22 +362,19 @@ public class MainActivity
 
   public boolean i_host_the_game() { return i_am_hosting; }
 
-  public boolean is_two_player_game() { return two_player_game; }
-
   public void start_human_game() {
     ((Nim_Game_View) findViewById(R.id.game_view)).setup_human_game(communication_socket, true);
   }
 
   public void two_player_game_ended() {
-    two_player_game = false;
     if (communication_socket != null && communication_socket.isConnected()) {
       if (i_host_the_game()) {
-        BT_Reading_Thread bt_thread = new BT_Reading_Thread(this, communication_socket, this, false);
+        BT_Reading_Thread bt_thread = new BT_Reading_Thread(communication_socket, this, false);
         bt_thread.execute();
       } else {
         Byte[] ack = new Byte[2];
         ack[0] = 0; ack[1] = 0;
-        BT_Writing_Thread bt_thread = new BT_Writing_Thread(this, communication_socket);
+        BT_Writing_Thread bt_thread = new BT_Writing_Thread(communication_socket);
         bt_thread.execute(ack);
       }
       //Log.d(tag, "closing socket");
@@ -421,12 +414,13 @@ public class MainActivity
   private final String my_uuid = "b87859ae-9f11-11e7-814c-0401beb96201";
   private int REQUEST_ENABLE_BT = 32003, REQUEST_HOST = 32004;
   private Vector<BluetoothDevice> available_devices = null;
-  private boolean welcoming = false, two_player_game = false, i_am_hosting = false;
+  private boolean i_am_hosting = false;
   AlertDialog welcome_dialog, bluetooth_dialog, host_or_join_dialog;
   private BT_Setup_Thread bt_thread;
   private BluetoothSocket communication_socket = null;
   private BluetoothServerSocket server_socket = null;
   private BluetoothAdapter bt_adapter = null;
   ProgressDialog bt_waiting_to_host_dialog = null;
+  private Context context;
 
 }

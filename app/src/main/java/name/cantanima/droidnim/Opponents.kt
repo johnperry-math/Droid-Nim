@@ -1,8 +1,6 @@
 package name.cantanima.droidnim
 
 import android.bluetooth.BluetoothSocket
-import android.os.AsyncTask
-import android.util.Log
 import java.util.*
 
 /**
@@ -11,7 +9,7 @@ import java.util.*
  * @see Computer_Opponent
  */
 
-val tag = "Opponents"
+//val tag = "Opponents"
 
 abstract class Opponent {
 
@@ -43,15 +41,15 @@ class Computer_Opponent(private val sometimes_stupid : Boolean = false) : Oppone
                 last_move = select_random_move()
             }
             if (!played and this_game.misere) {
-                val num_non_singletons = this_game.rows.sumBy { it -> if (it.pebbles > 1) 1 else 0 }
-                val num_singletons = this_game.rows.sumBy { it -> if (it.pebbles == 1) 1 else 0 }
+                val num_non_singletons = this_game.rows.sumBy { if (it.pebbles > 1) 1 else 0 }
+                val num_singletons = this_game.rows.sumBy { if (it.pebbles == 1) 1 else 0 }
                 if (num_non_singletons == 1) {
-                    val j = this_game.rows.indexOfFirst { it -> it.pebbles > 1 }
+                    val j = this_game.rows.indexOfFirst { it.pebbles > 1 }
                     val leave = if (num_singletons % 2 == 0) 1 else 0
                     last_move = Move(j, this_game.rows[j].pebbles - leave)
                     played = true
                 } else if (num_non_singletons == 0) {
-                    val j = this_game.rows.indexOfFirst { it -> it.pebbles != 0 }
+                    val j = this_game.rows.indexOfFirst { it.pebbles != 0 }
                     last_move = Move(j, this_game.rows[j].pebbles)
                     played = true
                 }
@@ -100,13 +98,13 @@ class Human_Opponent(private val game_view : Nim_Game_View, private val bt_socke
         bt_raw_data[1] = M.row.toByte()
         bt_raw_data[2] = M.number.toByte()
         bt_raw_data[3] = 0.toByte()
-        val bt_writer = BT_Writing_Thread(game_view.context, bt_socket)
+        val bt_writer = BT_Writing_Thread(bt_socket)
         bt_writer.execute(bt_raw_data)
     }
 
     override fun make_a_move(): Boolean {
         val bt_reader = BT_Reading_Thread(
-                game_view.context, bt_socket, this, true
+                bt_socket, this, true
         )
         bt_reader.execute()
         return false

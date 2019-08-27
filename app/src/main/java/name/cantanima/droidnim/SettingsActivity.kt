@@ -61,7 +61,7 @@ class SettingsActivity : AppCompatPreferenceActivity() {
      * activity is showing a two-pane settings UI.
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    class GeneralPreferenceFragment 
+    class GeneralPreferenceFragment
         : PreferenceFragment(), SharedPreferences.OnSharedPreferenceChangeListener
     {
 

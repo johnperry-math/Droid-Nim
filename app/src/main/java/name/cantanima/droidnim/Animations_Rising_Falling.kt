@@ -1,6 +1,5 @@
 package name.cantanima.droidnim
 
-import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
 import android.support.v4.content.res.ResourcesCompat
@@ -18,9 +17,9 @@ class Falling_Droids_Animation(
 ) : Runnable {
 
     private var step = 0
-    private val falling_droid : Array<Drawable?> = Array(11, { null })
-    private val falling_eyes : Array<Drawable?> = Array(11, { null })
-    private val falling_mouth : Array<Drawable?> = Array(11, { null })
+    private val falling_droid : Array<Drawable?> = Array(11) { null }
+    private val falling_eyes : Array<Drawable?> = Array(11) { null }
+    private val falling_mouth : Array<Drawable?> = Array(11) { null }
 
     init {
         falling_droid[0] = ResourcesCompat.getDrawable(
@@ -135,13 +134,13 @@ class Falling_Droids_Animation(
             val which_mouth_color = if (step == 10) view.color_deact_mouth else view.color_worry_mouth
             for (number in which_ones) {
                 val bounds = droids[row][number].bounds
-                droids[row][number] = falling_droid[step]!!.constantState.newDrawable()
+                droids[row][number] = falling_droid[step]!!.constantState!!.newDrawable()
                 droids[row][number].setColorFilter(which_droid_color, PorterDuff.Mode.SRC_ATOP)
                 droids[row][number].bounds = bounds
-                eyes[row][number] = falling_eyes[step]!!.constantState.newDrawable()
+                eyes[row][number] = falling_eyes[step]!!.constantState!!.newDrawable()
                 eyes[row][number].setColorFilter(which_eye_color, PorterDuff.Mode.SRC_ATOP)
                 eyes[row][number].bounds = bounds
-                mouths[row][number] = falling_mouth[step]!!.constantState.newDrawable()
+                mouths[row][number] = falling_mouth[step]!!.constantState!!.newDrawable()
                 mouths[row][number].setColorFilter(which_mouth_color, PorterDuff.Mode.SRC_ATOP)
                 mouths[row][number].bounds = bounds
             }
@@ -160,9 +159,9 @@ class Rising_Droids_Animation(
 ) : Runnable {
 
     private var step : Int = 0
-    private val rising_droid : Array<Drawable?> = Array(12, { null })
-    private val rising_eyes : Array<Drawable?> = Array(12, { null })
-    private val rising_mouths : Array<Drawable?> = Array(12, { null })
+    private val rising_droid : Array<Drawable?> = Array(12) { null }
+    private val rising_eyes : Array<Drawable?> = Array(12) { null }
+    private val rising_mouths : Array<Drawable?> = Array(12) { null }
 
     init {
         rising_droid[0] = ResourcesCompat.getDrawable(
@@ -282,13 +281,13 @@ class Rising_Droids_Animation(
         for (row in 0.until(droids.size))
             for (number in 0.until(droids[row].size)) {
                 val bounds = droids[row][number].bounds
-                droids[row][number] = rising_droid[11 - step]!!.constantState.newDrawable()
+                droids[row][number] = rising_droid[11 - step]!!.constantState!!.newDrawable()
                 droids[row][number].setColorFilter(which_droid_color, PorterDuff.Mode.SRC_ATOP)
                 droids[row][number].bounds = bounds
-                eyes[row][number] = rising_eyes[11 - step]!!.constantState.newDrawable()
+                eyes[row][number] = rising_eyes[11 - step]!!.constantState!!.newDrawable()
                 eyes[row][number].setColorFilter(which_eye_color, PorterDuff.Mode.SRC_ATOP)
                 eyes[row][number].bounds = bounds
-                mouths[row][number] = rising_mouths[11 - step]!!.constantState.newDrawable()
+                mouths[row][number] = rising_mouths[11 - step]!!.constantState!!.newDrawable()
                 mouths[row][number].setColorFilter(which_mouth_color, PorterDuff.Mode.SRC_ATOP)
                 mouths[row][number].bounds = bounds
             }

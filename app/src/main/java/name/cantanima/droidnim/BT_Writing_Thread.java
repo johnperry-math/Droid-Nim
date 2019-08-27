@@ -4,7 +4,7 @@ import android.app.AlertDialog;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
+//import android.util.Log;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -15,16 +15,16 @@ import java.io.OutputStream;
 
 public class BT_Writing_Thread extends AsyncTask<Byte [], Integer, Boolean> {
 
-  private String tag = "BT_Writing_Thread";
-  private byte[] data_to_write;
+  //private String tag = "BT_Writing_Thread";
 
-  public BT_Writing_Thread(Context main, BluetoothSocket socket) {
-    context = main;
+  public BT_Writing_Thread(BluetoothSocket socket) {
     bt_socket = socket;
   }
 
   @Override
   protected Boolean doInBackground(Byte[] ...params) {
+    boolean success;
+    OutputStream bt_output_stream;
     try {
       bt_output_stream = bt_socket.getOutputStream();
       int n = params[0][0] + 2;
@@ -54,6 +54,7 @@ public class BT_Writing_Thread extends AsyncTask<Byte [], Integer, Boolean> {
   @Override
   public void onPostExecute(Boolean success) {
     if (!success) {
+      Context context = MainActivity.getContext();
       String message = context.getString(R.string.bt_failed_to_write) + " " + failure_message;
       new AlertDialog.Builder(context).setTitle(context.getString(R.string.no_bluetooth_title))
           .setMessage(message)
@@ -62,11 +63,8 @@ public class BT_Writing_Thread extends AsyncTask<Byte [], Integer, Boolean> {
     }
   }
 
-  OutputStream bt_output_stream;
-  BluetoothSocket bt_socket;
-  Context context;
-  boolean success;
-  String failure_message;
+  private BluetoothSocket bt_socket;
+  private String failure_message;
 
 }
 

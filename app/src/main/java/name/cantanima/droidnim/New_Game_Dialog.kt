@@ -13,7 +13,7 @@ import android.widget.TextView
  * Dialog for a new game of Droid Nim.
  */
 class New_Game_Dialog(
-        private val my_context: Context, private val game_view: Nim_Game_View,
+        my_context: Context, private val game_view: Nim_Game_View,
         private var num_rows : Int, private var max_droids: Int
 ) :
         Dialog(my_context), View.OnClickListener, SeekBar.OnSeekBarChangeListener

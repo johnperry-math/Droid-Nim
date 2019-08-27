@@ -16,9 +16,8 @@ import java.io.InputStream;
 public class BT_Reading_Thread extends AsyncTask<Object, Integer, Boolean> {
 
   public BT_Reading_Thread(
-      Context main, BluetoothSocket socket, BTR_Listener listener, boolean show_dialog
+      BluetoothSocket socket, BTR_Listener listener, boolean show_dialog
   ) {
-    context = main;
     bt_socket = socket;
     notify = listener;
     show_progress_dialog = show_dialog;
@@ -26,6 +25,8 @@ public class BT_Reading_Thread extends AsyncTask<Object, Integer, Boolean> {
 
   @Override
   protected Boolean doInBackground(Object ...params) {
+    boolean success;
+    InputStream bt_input_stream;
     try {
       bt_input_stream = bt_socket.getInputStream();
       size = bt_input_stream.read(info);
@@ -42,6 +43,7 @@ public class BT_Reading_Thread extends AsyncTask<Object, Integer, Boolean> {
   @Override
   public void onPreExecute() {
     if (show_progress_dialog) {
+      Context context = MainActivity.getContext();
       progress_dialog = new ProgressDialog(context);
       progress_dialog.setTitle(context.getString(R.string.bt_progress_title));
       progress_dialog.setMessage(context.getString(R.string.bt_progress_message));
@@ -58,25 +60,24 @@ public class BT_Reading_Thread extends AsyncTask<Object, Integer, Boolean> {
     if (success)
       notify.received_data(size, info);
     else {
+      Context context = MainActivity.getContext();
       String message = context.getString(R.string.bt_failed_to_write) + " " + failure_message;
       new AlertDialog.Builder(context).setTitle(context.getString(R.string.no_bluetooth_title))
           .setMessage(message)
           .setPositiveButton(context.getString(R.string.understood), null)
           .show();
-      Nim_Game_View view = ((Nim_Game_View) ((MainActivity) context).findViewById(R.id.game_view));
+      Nim_Game_View view = (((MainActivity) context).findViewById(R.id.game_view));
       view.emergency_start_game();
     }
   }
 
-  ProgressDialog progress_dialog;
-  InputStream bt_input_stream;
-  BluetoothSocket bt_socket;
-  BTR_Listener notify;
-  Context context;
-  boolean success, show_progress_dialog = false;
-  final byte [] info = new byte[21];
-  int size;
-  String failure_message;
+  private ProgressDialog progress_dialog;
+  private BluetoothSocket bt_socket;
+  private BTR_Listener notify;
+  private boolean show_progress_dialog;
+  private final byte [] info = new byte[21];
+  private int size;
+  private String failure_message;
 
 }
 

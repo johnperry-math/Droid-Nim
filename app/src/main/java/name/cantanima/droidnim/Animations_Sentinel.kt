@@ -18,7 +18,7 @@ class Sentinels_Rising_Arm(
     private var delta = 1
     private val range = 0..10
     private var step = 0
-    private val frames : Array<Drawable?> = Array(11, { null })
+    private val frames : Array<Drawable?> = Array(11) { null }
 
     init {
         if (!forward) {
@@ -67,7 +67,7 @@ class Sentinels_Rising_Arm(
             delay = 0
             view.postOnAnimationDelayed(this, tmp)
         } else {
-            sentinels[which_one] = frames[step]!!.constantState.newDrawable()
+            sentinels[which_one] = frames[step]!!.constantState!!.newDrawable()
             sentinels[which_one].setColorFilter(view.color_happy_droid, PorterDuff.Mode.SRC_ATOP)
             view.invalidate()
             step += delta

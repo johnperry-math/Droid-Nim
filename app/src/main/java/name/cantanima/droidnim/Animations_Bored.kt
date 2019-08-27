@@ -4,7 +4,7 @@ import android.graphics.PorterDuff
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.support.v4.content.res.ResourcesCompat
-import android.util.Log
+//import android.util.Log
 
 abstract class Bored_Droids_Animation : Runnable {
 
@@ -28,13 +28,13 @@ abstract class Bored_Droids_Animation : Runnable {
 
     override fun run() {
         if (step < frame.size) {
-            droids[row][which_one] = frame[step]!!.constantState.newDrawable()
+            droids[row][which_one] = frame[step]!!.constantState!!.newDrawable()
             droids[row][which_one].setColorFilter(view.color_happy_droid, PorterDuff.Mode.SRC_ATOP)
             droids[row][which_one].bounds = bounds
-            eyes[row][which_one] = eye_frame[step]!!.constantState.newDrawable()
+            eyes[row][which_one] = eye_frame[step]!!.constantState!!.newDrawable()
             eyes[row][which_one].setColorFilter(view.color_happy_eyes, PorterDuff.Mode.SRC_ATOP)
             eyes[row][which_one].bounds = bounds
-            mouths[row][which_one] = mouth_frame[step]!!.constantState.newDrawable()
+            mouths[row][which_one] = mouth_frame[step]!!.constantState!!.newDrawable()
             mouths[row][which_one].setColorFilter(view.color_happy_mouth, PorterDuff.Mode.SRC_ATOP)
             mouths[row][which_one].bounds = bounds
             view.invalidate()
@@ -54,10 +54,10 @@ abstract class Bored_Droids_Animation : Runnable {
     }
 
     fun stop() {
-        droids[row][which_one] = frame[0]!!.constantState.newDrawable()
+        droids[row][which_one] = frame[0]!!.constantState!!.newDrawable()
         droids[row][which_one].setColorFilter(view.color_happy_droid, PorterDuff.Mode.SRC_ATOP)
         droids[row][which_one].bounds = bounds
-        eyes[row][which_one] = frame[0]!!.constantState.newDrawable()
+        eyes[row][which_one] = frame[0]!!.constantState!!.newDrawable()
         eyes[row][which_one].setColorFilter(view.color_happy_eyes, PorterDuff.Mode.SRC_ATOP)
         eyes[row][which_one].bounds = bounds
         step = frame.size
@@ -78,9 +78,9 @@ class Tapping_Droids_Animation constructor(
 ): Bored_Droids_Animation() {
 
     override val repetitions = 2
-    override val frame: Array<Drawable?> = Array(13, { null })
-    override val eye_frame: Array<Drawable?> = Array(13, { null })
-    override val mouth_frame: Array<Drawable?> = Array(13, { null })
+    override val frame: Array<Drawable?> = Array(13) { null }
+    override val eye_frame: Array<Drawable?> = Array(13) { null }
+    override val mouth_frame: Array<Drawable?> = Array(13) { null }
     override var delay = 30L
 
     init {
@@ -219,9 +219,9 @@ class Stretching_Droids_Animation constructor(
 ): Bored_Droids_Animation() {
 
     override val repetitions = 0
-    override val frame: Array<Drawable?> = Array(29, { null })
-    override val eye_frame: Array<Drawable?> = Array(29, { null })
-    override val mouth_frame: Array<Drawable?> = Array(29, { null })
+    override val frame: Array<Drawable?> = Array(29) { null }
+    override val eye_frame: Array<Drawable?> = Array(29) { null }
+    override val mouth_frame: Array<Drawable?> = Array(29) { null }
     override var delay = 50L
 
     init {
@@ -510,9 +510,9 @@ class Dancing_Droids_Animation constructor(
 ): Bored_Droids_Animation() {
 
     override val repetitions = 2
-    override val frame: Array<Drawable?> = Array(20, { null })
-    override val eye_frame: Array<Drawable?> = Array(20, { null })
-    override val mouth_frame: Array<Drawable?> = Array(20, { null })
+    override val frame: Array<Drawable?> = Array(20) { null }
+    override val eye_frame: Array<Drawable?> = Array(20) { null }
+    override val mouth_frame: Array<Drawable?> = Array(20) { null }
     override var delay = 30L
 
     init {
